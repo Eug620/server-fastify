@@ -1,34 +1,31 @@
 import { join } from 'node:path'
 import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
 import { FastifyPluginAsync, FastifyServerOptions } from 'fastify'
+import { config } from './config'
 
 export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
-
+  port?: number | string
+  host?: string
 }
-// Pass --options via CLI arguments in command to enable these options.
+
 const options: AppOptions = {
+  port: config.port,
+  host: config.host,
+  logger: config.logger,
+  bodyLimit: config.bodyLimit,
+  trustProxy: config.trustProxy,
+  requestTimeout: config.requestTimeout,
 }
 
 const app: FastifyPluginAsync<AppOptions> = async (
   fastify,
   opts
 ): Promise<void> => {
-  // Place here your custom code!
-
-  // Do not touch the following lines
-
-  // This loads all plugins defined in plugins
-  // those should be support plugins that are reused
-  // through your application
-  // eslint-disable-next-line no-void
   void fastify.register(AutoLoad, {
     dir: join(__dirname, 'plugins'),
     options: opts
   })
 
-  // This loads all plugins defined in routes
-  // define your routes in one of these
-  // eslint-disable-next-line no-void
   void fastify.register(AutoLoad, {
     dir: join(__dirname, 'routes'),
     options: opts

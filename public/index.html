@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>宝宝日常记录</title>
+</head>
+<style>
+    /* ==================== CSS 变量（可配置主题） ==================== */
+    :root {
+        /* --bg-primary: #272727; */
+        --bg-primary: #272727;
+        --bg-secondary: #1e1e1e;
+        --bg-tertiary: #2a2a2a;
+        --accent: #4ECDC4;
+        --text-primary: #fff;
+        --text-secondary: rgba(255, 255, 255, 0.5);
+        --text-muted: #888;
+        --border: #333;
+        --card-bg: rgba(255, 255, 255, 0.1);
+        --modal-bg: #fff;
+        --modal-text: #333;
+        --modal-muted: #999;
+        --shadow-light: 0 2px 6px rgba(0, 0, 0, 0.15);
+        --shadow-medium: 0 8px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: var(--bg-primary);
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        overflow: hidden;
+    }
+
+    /* ==================== Canvas ==================== */
+    canvas {
+        width: 100dvw;
+        height: 50dvw;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        touch-action: none;
+    }
+
+    /* ==================== Toast 提示 ==================== */
+    .toast {
+        position: fixed;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-20px);
+        background: rgba(0, 0, 0, 0.75);
+        color: var(--text-primary);
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        opacity: 0;
+        transition: opacity 0.3s, transform 0.3s;
+        z-index: 1000;
+        pointer-events: none;
+    }
+
+    .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    /* ==================== 卡片列表 ==================== */
+    .card-list {
+        overflow-y: auto;
+        padding: 60px 16px 16px;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 12px;
+        align-content: start;
+    }
+
+    .card {
+        border-radius: 14px;
+        padding: 14px 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        justify-content: center;
+        gap: 6px;
+        font-weight: 600;
+        box-shadow: var(--shadow-light);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        cursor: pointer;
+        min-height: 80px;
+        background-color: var(--card-bg);
+    }
+
+
+    .card__title {
+        font-size: 14px;
+        opacity: 0.9;
+        color: var(--text-secondary);
+
+    }
+
+    .card__count {
+        font-size: 12px;
+        line-height: 1;
+        color: var(--text-secondary);
+    }
+
+    /* ==================== 通用弹窗遮罩 ==================== */
+    .modal-mask {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 2000;
+    }
+
+    .modal-mask.show {
+        display: flex;
+    }
+
+    .modal {
+        background: var(--modal-bg);
+        border-radius: 14px;
+        padding: 20px;
+        width: 300px;
+        max-width: 90vw;
+    }
+
+    .modal__title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 16px;
+        text-align: center;
+        color: var(--modal-text);
+    }
+
+    .modal__body {
+        min-height: 40px;
+    }
+
+    .modal__footer {
+        display: flex;
+        gap: 10px;
+        margin-top: 8px;
+    }
+
+    .modal__footer button {
+        flex: 1;
+        padding: 10px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .btn-cancel {
+        background: #f0f0f0;
+        color: #666;
+    }
+
+    .btn-confirm {
+        background: var(--accent);
+        color: var(--text-primary);
+    }
+
+    /* ==================== 表单字段 ==================== */
+    .form-field {
+        margin-bottom: 14px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .form-field label {
+        display: block;
+        font-size: 13px;
+        color: #666;
+        margin-bottom: 6px;
+    }
+
+    .form-field input[type=number] {
+        width: 100%;
+        padding: 8px 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    .form-field input[type=file] {
+        width: 100%;
+        font-size: 13px;
+    }
+
+    .form-preview {
+        max-width: 100%;
+        max-height: 240px;
+        border-radius: 8px;
+        display: none;
+        margin: 8px auto;
+    }
+
+    /* ==================== 日期 Tab 栏 ==================== */
+    .date-tabs {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        background: var(--bg-secondary);
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        z-index: 500;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .date-tabs::-webkit-scrollbar {
+        display: none;
+    }
+
+    .date-tabs__list {
+        display: flex;
+        padding: 0 8px;
+        gap: 6px;
+    }
+
+    .date-tab {
+        flex-shrink: 0;
+        padding: 6px 14px;
+        border-radius: 16px;
+        font-size: 13px;
+        color: var(--text-muted);
+        background: var(--bg-tertiary);
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .date-tab:hover {
+        background: #333;
+        color: #ccc;
+    }
+
+    .date-tab.active {
+        background: var(--accent);
+        color: var(--text-primary);
+        font-weight: 600;
+    }
+
+    /* ==================== 数据列表弹窗 ==================== */
+    .list-modal {
+        width: 340px;
+        max-width: 90vw;
+        max-height: 70vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .list-modal__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 12px;
+        border-bottom: 1px solid #eee;
+        margin-bottom: 12px;
+    }
+
+    .list-modal__title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--modal-text);
+    }
+
+    .list-modal__close {
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: var(--modal-muted);
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+    }
+
+    .list-modal__content {
+        flex: 1;
+        overflow-y: auto;
+    }
+
+    .list-item {
+        display: flex;
+        align-items: flex-start;
+        padding: 10px 0;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .list-item:last-child {
+        border-bottom: none;
+    }
+
+    .list-item__time {
+        font-size: 12px;
+        color: var(--modal-muted);
+        min-width: 70px;
+        padding-top: 2px;
+    }
+
+    .list-item__content {
+        flex: 1;
+        margin-left: 10px;
+    }
+
+    .list-item__value {
+        font-size: 14px;
+        color: var(--modal-text);
+    }
+
+    .list-item__img {
+        max-width: 120px;
+        max-height: 120px;
+        border-radius: 8px;
+        margin-top: 4px;
+        cursor: zoom-in;
+    }
+
+    .list-item__empty {
+        font-size: 13px;
+        color: #bbb;
+        padding-top: 4px;
+    }
+
+    .list-empty {
+        text-align: center;
+        color: #aaa;
+        padding: 40px 0;
+        font-size: 14px;
+    }
+
+    /* ==================== 图片查看器 ==================== */
+    .img-viewer {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: none;
+        z-index: 3000;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        touch-action: none;
+    }
+
+    .img-viewer.show {
+        display: flex;
+    }
+
+    .img-viewer__close {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 50%;
+        color: var(--text-primary);
+        font-size: 24px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 3001;
+    }
+
+    .img-viewer__close:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .img-viewer__zoom-controls {
+        position: absolute;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 12px;
+        z-index: 3001;
+    }
+
+    .img-viewer__zoom-btn {
+        width: 44px;
+        height: 44px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 50%;
+        color: var(--text-primary);
+        font-size: 20px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .img-viewer__zoom-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    .img-viewer__zoom-level {
+        position: absolute;
+        bottom: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 14px;
+        z-index: 3001;
+    }
+
+    .img-viewer__img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transition: transform 0.1s ease-out;
+        transform-origin: center center;
+        cursor: grab;
+    }
+
+    .img-viewer__img.dragging {
+        cursor: grabbing;
+        transition: none;
+    }
+</style>
+
+<body>
+    <div class="date-tabs" id="dateTabs">
+        <div class="date-tabs__list" id="dateTabsList"></div>
+    </div>
+    <div class="card-list" id="cardList"></div>
+
+    <canvas id="cvs"></canvas>
+    <div class="toast" id="toast"></div>
+
+    <!-- 输入弹窗 -->
+    <div class="modal-mask" id="inputModal">
+        <div class="modal">
+            <div class="modal__title" id="inputModalTitle"></div>
+            <div class="modal__body" id="inputModalBody"></div>
+            <div class="modal__footer">
+                <button class="btn-cancel" id="inputModalCancel">取消</button>
+                <button class="btn-confirm" id="inputModalConfirm">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 数据列表弹窗 -->
+    <div class="modal-mask" id="listModal">
+        <div class="modal list-modal">
+            <div class="list-modal__header">
+                <div class="list-modal__title" id="listModalTitle"></div>
+                <button class="list-modal__close" id="listModalClose">×</button>
+            </div>
+            <div class="list-modal__content" id="listModalContent"></div>
+        </div>
+    </div>
+
+    <!-- 图片查看器 -->
+    <div class="img-viewer" id="imgViewer">
+        <button class="img-viewer__close" id="imgViewerClose">×</button>
+        <img class="img-viewer__img" id="imgViewerImg" alt="预览图片">
+        <div class="img-viewer__zoom-level" id="imgViewerZoomLevel">100%</div>
+        <div class="img-viewer__zoom-controls">
+            <button class="img-viewer__zoom-btn" id="zoomOut">−</button>
+            <button class="img-viewer__zoom-btn" id="zoomReset">1:1</button>
+            <button class="img-viewer__zoom-btn" id="zoomIn">+</button>
+        </div>
+    </div>
+
+    <script>
+        /* ==================== 全局配置（可修改） ==================== */
+        const AppConfig = {
+            // Canvas 相关
+            canvas: {
+                aspectRatio: 0.5,         // 画布高度/宽度比例
+                duration: 450,            // 动画时长 ms
+                swipeThreshold: 30,       // 滑动判定阈值 px
+                tapThreshold: 15,         // 点击判定阈值 px
+                labelRadiusRatio: 0.62,   // 标签半径占比
+                labelFontRatio: 0.11,     // 标签字体占比
+                btnRadiusRatio: 0.48,      // 按钮半径占比
+                btnFontRatio: 0.6,        // 按钮字体占比
+                btnHitTolerance: 10,      // 按钮点击容差 px
+                shadow: {
+                    btn: { color: 'rgba(0,0,0,0.35)', blur: 20, offsetY: -6 },
+                },
+                colors: {
+                    center: '#272727',
+                    centerDark: '#272727',
+                    btnText: '#7d7d7f',
+                    btnStroke: 'rgba(0,0,0,0.1)',
+                    labelActive: 'rgba(255,255,255,1)',
+                    labelInactive: 'rgba(255,255,255,0.5)',
+                },
+            },
+            // 卡片网格
+            grid: {
+                columns: 4,
+                gap: 12,
+            },
+            // 图片查看器
+            viewer: {
+                minScale: 0.5,
+                maxScale: 5,
+                scaleStep: 0.25,
+            },
+        };
+
+        /* ==================== 数据配置 ==================== */
+        const options = [
+            { type: 'wn', label: '喂奶', color: 'rgba(255,138,128,0.5)', options: [{ key: 'ml', label: 'ml' }] },     // 暖粉：奶的温暖感
+            { type: 'hs', label: '喝水', color: 'rgba(79,165,255,0.5)', options: [{ key: 'ml', label: 'ml' }] },     // 蓝色：水的清澈感
+            { type: 'db', label: '大便', color: 'rgba(139,98,58,0.5)', options: [{ key: 'img', label: 'img' }] },    // 棕色：大便的颜色
+            { type: 'xb', label: '小便', color: 'rgba(255,206,86,0.5)', options: [{ key: 'img', label: 'img' }]},    // 黄色：小便的颜色
+            { type: 'sj', label: '睡觉', color: 'rgba(149,117,205,0.5)', options: [{ key: 'h', label: 'h' }] },      // 紫色：睡眠的夜晚感
+        ];
+
+        let values = [];
+
+        /* ==================== API 接口 ==================== */
+        const API = {
+            async list(date) {
+                const url = date ? `/api/records?date=${encodeURIComponent(date)}` : '/api/records';
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('加载数据失败');
+                return res.json();
+            },
+            async create(data) {
+                const res = await fetch('/api/records', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                if (!res.ok) throw new Error('创建记录失败');
+                return res.json();
+            },
+            async remove(id) {
+                const res = await fetch(`/api/records/${id}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error('删除记录失败');
+            }
+        };
+
+        async function loadData() {
+            try {
+                values = await API.list();
+            } catch (e) {
+                console.error('加载数据失败:', e);
+                values = [];
+            }
+        }
+
+        /* ==================== 常量 ==================== */
+        const HALF_PI = Math.PI / 2;
+        const TAU = Math.PI * 2;
+        const { canvas: CC, grid, viewer } = AppConfig;
+
+        /* ==================== DOM 引用 ==================== */
+        const $ = id => document.getElementById(id);
+        const canvas = $('cvs');
+        const ctx = canvas.getContext('2d');
+
+        /* ==================== 状态管理 ==================== */
+        const state = {
+            // Canvas 状态
+            centerX: 0,
+            centerY: 0,
+            radius: 0,
+            btnRadius: 0,
+            activeIndex: 0,
+            rotation: 0,
+            animFrom: 0,
+            animStart: null,
+            animating: false,
+            startX: 0,
+            startY: 0,
+            tracking: false,
+            // 业务状态
+            selectedDate: null,
+            currentOption: null,
+            // 图片查看器
+            viewer: {
+                scale: 1,
+                translateX: 0,
+                translateY: 0,
+                isDragging: false,
+                isPinching: false,
+                startX: 0,
+                startY: 0,
+                pinchDist: 0,
+                pinchScale: 1,
+            },
+        };
+
+        const sectorCount = options.length;
+        const sectorAngle = TAU / sectorCount;
+
+        /* ==================== 工具函数库 ==================== */
+
+        // 阴影绘制
+        function withShadow(shadow, drawFn) {
+            ctx.save();
+            ctx.shadowColor = shadow.color;
+            ctx.shadowBlur = shadow.blur;
+            ctx.shadowOffsetX = shadow.offsetX || 0;
+            ctx.shadowOffsetY = shadow.offsetY || 0;
+            drawFn();
+            ctx.restore();
+        }
+
+        // 绘制扇形路径
+        function drawArc(cx, cy, r, start, end) {
+            ctx.beginPath();
+            ctx.moveTo(cx, cy);
+            ctx.arc(cx, cy, r, start, end, false);
+            ctx.closePath();
+        }
+
+        // 绘制居中文字
+        function drawText(text, x, y, font, color) {
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = font;
+            ctx.fillStyle = color;
+            ctx.fillText(text, x, y);
+        }
+
+        // 坐标转换
+        function toCanvasPoint(clientX, clientY) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (clientX - rect.left) * (canvas.width / rect.width),
+                y: (clientY - rect.top) * (canvas.height / rect.height),
+            };
+        }
+
+        // Toast 提示
+        function showToast(message) {
+            const toast = $('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // 通用弹窗控制
+        function openModal(id) { $(id).classList.add('show'); }
+        function closeModal(id) { $(id).classList.remove('show'); }
+
+        // 格式化日期为 MM/DD
+        function formatDate(ts) {
+            const d = new Date(ts);
+            return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
+        }
+
+        // 格式化时间为 hh:mm:ss
+        function formatTime(ts) {
+            const d = new Date(ts);
+            const p = n => String(n).padStart(2, '0');
+            return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+        }
+
+        // 判断时间戳是否属于指定日期
+        function isDate(ts, dateStr) {
+            return formatDate(ts) === dateStr;
+        }
+
+        // 获取今日日期
+        function todayStr() {
+            return formatDate(Date.now());
+        }
+
+        // DOM 创建辅助
+        function createEl(tag, className, text) {
+            const el = document.createElement(tag);
+            if (className) el.className = className;
+            if (text !== undefined) el.textContent = text;
+            return el;
+        }
+
+        // 创建带点击事件的元素
+        function createClickable(tag, className, onClick) {
+            const el = createEl(tag, className);
+            if (onClick) el.addEventListener('click', onClick);
+            return el;
+        }
+
+        /* ==================== Canvas 绘制 ==================== */
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawSectors();
+            drawSemicircleButton();
+        }
+
+        function drawSectors() {
+            const highlight = getCurrentIndex();
+            for (let i = 0; i < sectorCount; i++) {
+                const start = (i - 0.5) * sectorAngle - HALF_PI + state.rotation;
+                const end = start + sectorAngle;
+
+                drawArc(state.centerX, state.centerY, state.radius, start, end);
+                ctx.fillStyle = options[i].color;
+                ctx.fill();
+
+                drawSectorLabel(start, options[i].label, i === highlight);
+            }
+        }
+
+        function drawSectorLabel(start, label, isActive) {
+            const midAngle = start + sectorAngle / 2;
+            const r = state.radius * CC.labelRadiusRatio;
+            const tx = state.centerX + Math.cos(midAngle) * r;
+            const ty = state.centerY + Math.sin(midAngle) * r - state.radius * CC.labelFontRatio;
+            const fontSize = Math.round(state.radius * CC.labelFontRatio);
+
+            drawText(label, tx, ty, `600 ${fontSize}px sans-serif`,
+                isActive ? CC.colors.labelActive : CC.colors.labelInactive);
+        }
+
+        function drawSemicircleButton() {
+            state.btnRadius = state.radius * CC.btnRadiusRatio;
+            const { centerX: cx, centerY: cy, btnRadius: br } = state;
+
+            // 按钮背景
+            withShadow(CC.shadow.btn, () => {
+                ctx.beginPath();
+                ctx.arc(cx, cy, br, Math.PI, TAU, false);
+                ctx.closePath();
+                const grad = ctx.createLinearGradient(cx - br, cy - br, cx + br, cy);
+                grad.addColorStop(0, CC.colors.center);
+                grad.addColorStop(1, CC.colors.centerDark);
+                ctx.fillStyle = grad;
+                ctx.fill();
+            });
+
+            // 边框
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = CC.colors.btnStroke;
+            ctx.beginPath();
+            ctx.arc(cx, cy, br, Math.PI, TAU, false);
+            ctx.stroke();
+
+            // 文字
+            const fontSize = Math.round(br * CC.btnFontRatio);
+            drawText('+', cx, cy - br * 0.35, `bold ${fontSize}px sans-serif`, CC.colors.btnText);
+        }
+
+        function getCurrentIndex() {
+            return ((state.activeIndex % sectorCount) + sectorCount) % sectorCount;
+        }
+
+        /* ==================== 动画 ==================== */
+
+        const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+
+        function animate(ts) {
+            if (state.animStart === null) state.animStart = ts;
+            const t = Math.min((ts - state.animStart) / CC.duration, 1);
+            state.rotation = state.animFrom + (-state.activeIndex * sectorAngle - state.animFrom) * easeOutCubic(t);
+            draw();
+            if (t < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                state.rotation = -state.activeIndex * sectorAngle;
+                state.animating = false;
+            }
+        }
+
+        function rotateTo(delta) {
+            if (delta === 0) return;
+            state.activeIndex += delta;
+            state.animFrom = state.rotation;
+            state.animStart = null;
+            if (!state.animating) {
+                state.animating = true;
+                requestAnimationFrame(animate);
+            }
+        }
+
+        /* ==================== 交互 ==================== */
+
+        function isInsideButton(pt) {
+            const dist = Math.hypot(pt.x - state.centerX, pt.y - state.centerY);
+            return dist <= state.btnRadius + CC.btnHitTolerance && pt.y <= state.centerY;
+        }
+
+        function onPointerDown(e) {
+            state.startX = e.clientX;
+            state.startY = e.clientY;
+            state.tracking = true;
+            canvas.setPointerCapture(e.pointerId);
+        }
+
+        function onPointerUp(e) {
+            if (!state.tracking) return;
+            state.tracking = false;
+            const dx = e.clientX - state.startX;
+            const dy = e.clientY - state.startY;
+
+            const isTap = Math.abs(dx) < CC.tapThreshold && Math.abs(dy) < CC.tapThreshold;
+            if (isTap && isInsideButton(toCanvasPoint(e.clientX, e.clientY))) {
+                openInputDialog(options[getCurrentIndex()]);
+                return;
+            }
+
+            if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > CC.swipeThreshold) {
+                rotateTo(dx < 0 ? 1 : -1);
+            }
+        }
+
+        canvas.addEventListener('pointerdown', onPointerDown);
+        canvas.addEventListener('pointerup', onPointerUp);
+        canvas.addEventListener('pointercancel', () => { state.tracking = false; });
+
+        /* ==================== 日期 Tab ==================== */
+
+        function getAllDates() {
+            const dates = new Set([todayStr()]);
+            values.forEach(v => dates.add(formatDate(v.timestamp)));
+            return Array.from(dates).sort((a, b) => {
+                const [ma, da] = a.split('/').map(Number);
+                const [mb, db] = b.split('/').map(Number);
+                return mb * 100 + db - (ma * 100 + da);
+            });
+        }
+
+        function renderDateTabs() {
+            const dates = getAllDates();
+            const list = $('dateTabsList');
+            list.innerHTML = '';
+            if (!state.selectedDate) state.selectedDate = todayStr();
+
+            dates.forEach(date => {
+                const tab = createClickable('div', 'date-tab' + (date === state.selectedDate ? ' active' : ''), () => {
+                    state.selectedDate = date;
+                    renderDateTabs();
+                    renderCards();
+                });
+                tab.textContent = date;
+                list.appendChild(tab);
+            });
+
+            const activeTab = list.querySelector('.date-tab.active');
+            if (activeTab) activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+        }
+
+        /* ==================== 卡片列表 ==================== */
+
+        function getDateCounts(dateStr) {
+            const counts = {};
+            options.forEach(opt => { counts[opt.type] = 0; });
+            values.forEach(v => {
+                if (isDate(v.timestamp, dateStr)) {
+                    counts[v.type] = (counts[v.type] || 0) + 1;
+                }
+            });
+            return counts;
+        }
+
+        function renderCards() {
+            const dateStr = state.selectedDate || todayStr();
+            const counts = getDateCounts(dateStr);
+            const list = $('cardList');
+            list.style.gridTemplateColumns = `repeat(${grid.columns}, 1fr)`;
+            list.innerHTML = '';
+
+            options.forEach(opt => {
+                const card = createEl('div', 'card');
+                card.style.backgroundColor = opt.color;
+                card.innerHTML = `<div class="card__title">${opt.label}</div><div class="card__count">${counts[opt.type]} 次</div>`;
+                card.addEventListener('click', () => openDataList(opt, dateStr));
+                list.appendChild(card);
+            });
+        }
+
+        /* ==================== 数据列表弹窗 ==================== */
+
+        function getDataByType(dateStr, type) {
+            return values
+                .filter(v => isDate(v.timestamp, dateStr) && v.type === type)
+                .sort((a, b) => a.timestamp - b.timestamp);
+        }
+
+        function openDataList(option, dateStr) {
+            $('listModalTitle').textContent = `${option.label} - ${dateStr}`;
+            const content = $('listModalContent');
+            content.innerHTML = '';
+
+            const dataList = getDataByType(dateStr, option.type);
+            if (dataList.length === 0) {
+                content.appendChild(createEl('div', 'list-empty', '暂无数据'));
+                openModal('listModal');
+                return;
+            }
+
+            const fields = option.options || [];
+            dataList.forEach(item => {
+                const row = createEl('div', 'list-item');
+                row.appendChild(createEl('div', 'list-item__time', formatTime(item.timestamp)));
+
+                const content = createEl('div', 'list-item__content');
+                content.style.flex = '1';
+                content.style.marginLeft = '10px';
+                fields.forEach(f => {
+                    if (f.key === 'img') {
+                        if (item.img) {
+                            const img = createEl('img', 'list-item__img');
+                            img.src = item.img;
+                            img.alt = option.label;
+                            img.addEventListener('click', () => openImgViewer(item.img));
+                            content.appendChild(img);
+                        } else {
+                            content.appendChild(createEl('div', 'list-item__empty', '暂无图片'));
+                        }
+                    } else {
+                        const val = item[f.key];
+                        const text = val ? `${val} ${f.label}` : '--';
+                        content.appendChild(createEl('div', 'list-item__value', text));
+                    }
+                });
+
+                row.appendChild(content);
+
+                // 删除按钮
+                const delBtn = createEl('button');
+                delBtn.textContent = '删除';
+                delBtn.style.cssText = 'background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px;padding:4px 8px;';
+                delBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (!item.id) { showToast('记录ID缺失'); return; }
+                    try {
+                        await API.remove(item.id);
+                        const idx = values.findIndex(v => v.id === item.id);
+                        if (idx >= 0) values.splice(idx, 1);
+                        renderDateTabs();
+                        renderCards();
+                        openDataList(option, dateStr);
+                        showToast('已删除');
+                    } catch (err) {
+                        showToast('删除失败');
+                    }
+                });
+                row.appendChild(delBtn);
+
+                $('listModalContent').appendChild(row);
+            });
+
+            openModal('listModal');
+        }
+
+        $('listModalClose').addEventListener('click', () => closeModal('listModal'));
+        $('listModal').addEventListener('click', e => { if (e.target.id === 'listModal') closeModal('listModal'); });
+
+        /* ==================== 图片查看器 ==================== */
+
+        function resetViewer() {
+            state.viewer.scale = 1;
+            state.viewer.translateX = 0;
+            state.viewer.translateY = 0;
+            applyViewerTransform();
+        }
+
+        function applyViewerTransform() {
+            const v = state.viewer;
+            $('imgViewerImg').style.transform = `translate(${v.translateX}px, ${v.translateY}px) scale(${v.scale})`;
+            $('imgViewerZoomLevel').textContent = `${Math.round(v.scale * 100)}%`;
+        }
+
+        function openImgViewer(src) {
+            $('imgViewerImg').src = src;
+            resetViewer();
+            openModal('imgViewer');
+        }
+
+        function setViewerScale(newScale) {
+            const v = state.viewer;
+            v.scale = Math.max(viewer.minScale, Math.min(viewer.maxScale, newScale));
+            if (v.scale <= 1) {
+                v.translateX = 0;
+                v.translateY = 0;
+            }
+            applyViewerTransform();
+        }
+
+        // 事件绑定
+        $('imgViewerClose').addEventListener('click', () => closeModal('imgViewer'));
+        $('zoomIn').addEventListener('click', () => setViewerScale(state.viewer.scale + viewer.scaleStep));
+        $('zoomOut').addEventListener('click', () => setViewerScale(state.viewer.scale - viewer.scaleStep));
+        $('zoomReset').addEventListener('click', resetViewer);
+
+        // 滚轮缩放
+        $('imgViewer').addEventListener('wheel', e => {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -viewer.scaleStep : viewer.scaleStep;
+            setViewerScale(state.viewer.scale + delta);
+        });
+
+        // 拖拽（仅在非双指模式下生效）
+        $('imgViewerImg').addEventListener('pointerdown', e => {
+            const v = state.viewer;
+            if (v.isPinching) return;  // 双指缩放时禁用拖拽
+            if (e.pointerType === 'touch' && e.isPrimary === false) return;
+            v.isDragging = true;
+            v.startX = e.clientX - v.translateX;
+            v.startY = e.clientY - v.translateY;
+            $('imgViewerImg').classList.add('dragging');
+            $('imgViewerImg').setPointerCapture(e.pointerId);
+        });
+
+        $('imgViewerImg').addEventListener('pointermove', e => {
+            const v = state.viewer;
+            if (!v.isDragging) return;
+            v.translateX = e.clientX - v.startX;
+            v.translateY = e.clientY - v.startY;
+            applyViewerTransform();
+        });
+
+        $('imgViewerImg').addEventListener('pointerup', () => {
+            state.viewer.isDragging = false;
+            $('imgViewerImg').classList.remove('dragging');
+        });
+
+        // 双指缩放
+        $('imgViewer').addEventListener('touchstart', e => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const v = state.viewer;
+                v.isPinching = true;  // 标记为双指模式
+                v.isDragging = false;  // 禁用拖拽
+                const [t1, t2] = [e.touches[0], e.touches[1]];
+                v.pinchDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+                v.pinchScale = v.scale;
+            }
+        });
+
+        $('imgViewer').addEventListener('touchmove', e => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const v = state.viewer;
+                const [t1, t2] = [e.touches[0], e.touches[1]];
+                const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+                if (v.pinchDist > 0) {
+                    setViewerScale(v.pinchScale * (dist / v.pinchDist));
+                }
+            }
+        }, { passive: false });
+
+        $('imgViewer').addEventListener('touchend', e => {
+            const v = state.viewer;
+            if (e.touches.length < 2) {
+                v.pinchDist = 0;
+                v.isPinching = false;  // 退出双指模式
+            }
+            // 如果还剩一个手指，可以重新开始拖拽
+            if (e.touches.length === 1 && v.scale > 1) {
+                v.isDragging = true;
+                v.startX = e.touches[0].clientX - v.translateX;
+                v.startY = e.touches[0].clientY - v.translateY;
+            }
+        });
+
+        // 双击
+        $('imgViewerImg').addEventListener('dblclick', () => {
+            if (state.viewer.scale > 1.01) resetViewer();
+            else setViewerScale(2);
+        });
+
+        $('imgViewer').addEventListener('click', e => {
+            if (e.target.id === 'imgViewer') closeModal('imgViewer');
+        });
+
+        /* ==================== 输入弹窗 ==================== */
+
+        function createNumberField(f) {
+            const wrap = createEl('div', 'form-field');
+            const label = createEl('label', null, f.label);
+            const input = createEl('input');
+            input.type = 'number';
+            input.min = '0';
+            input.step = 'any';
+            input.dataset.key = f.key;
+            wrap.appendChild(input);
+            wrap.appendChild(label);
+            return wrap;
+        }
+
+        function createImageField(f) {
+            const wrap = createEl('div', 'form-field');
+            // const label = createEl('label', null, f.label);
+            const input = createEl('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            const preview = createEl('img', 'form-preview');
+
+            input.addEventListener('change', () => {
+                const file = input.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                    preview.src = reader.result;
+                    preview.style.display = 'block';
+                    input.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // wrap.appendChild(label);
+            wrap.appendChild(input);
+            wrap.appendChild(preview);
+            return wrap;
+        }
+
+        function openInputDialog(option) {
+            state.currentOption = option;
+            $('inputModalTitle').textContent = option.label;
+            const body = $('inputModalBody');
+            body.innerHTML = '';
+
+            (option.options || []).forEach(f => {
+                body.appendChild(f.key === 'img' ? createImageField(f) : createNumberField(f));
+            });
+
+            openModal('inputModal');
+        }
+
+        function closeInputDialog() {
+            closeModal('inputModal');
+            state.currentOption = null;
+        }
+
+        async function submitInput() {
+            const opt = state.currentOption;
+            if (!opt) return;
+
+            const record = { type: opt.type, ml: '', img: '', h: '', timestamp: Date.now() };
+            (opt.options || []).forEach(f => {
+                if (f.key === 'img') {
+                    const preview = $('inputModalBody').querySelector('.form-preview');
+                    record.img = preview && preview.src ? preview.src : '';
+                } else {
+                    const input = $('inputModalBody').querySelector(`input[data-key="${f.key}"]`);
+                    record[f.key] = input ? input.value : '';
+                }
+            });
+
+            try {
+                const saved = await API.create(record);
+                record.id = saved.id;
+                values.push(record);
+                closeInputDialog();
+                state.selectedDate = todayStr();
+                renderDateTabs();
+                renderCards();
+                showToast(`已记录: ${opt.label}`);
+            } catch (e) {
+                showToast('保存失败，请重试');
+                console.error(e);
+            }
+        }
+
+        $('inputModalCancel').addEventListener('click', closeInputDialog);
+        $('inputModalConfirm').addEventListener('click', submitInput);
+
+        /* ==================== 初始化 ==================== */
+
+        async function init() {
+            await loadData();
+            renderDateTabs();
+            renderCards();
+            resize();
+        }
+
+        function resize() {
+            const w = window.innerWidth;
+            canvas.width = w;
+            canvas.height = Math.round(w * CC.aspectRatio);
+            state.centerX = canvas.width / 2;
+            state.centerY = canvas.height;
+            state.radius = canvas.width / 2;
+            draw();
+        }
+
+        window.addEventListener('resize', resize);
+        init();
+    </script>
+</body>
+
+</html>
