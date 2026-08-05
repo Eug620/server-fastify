@@ -1,18 +1,17 @@
 import { FastifyPluginAsync } from 'fastify'
-import { recordStore } from '../data/recordStore'
+import { recordStore, RecordType } from '../../../services/recordStore'
 
 const records: FastifyPluginAsync = async (fastify): Promise<void> => {
   // GET /api/records?date=MM/DD - 查询记录列表
-  fastify.get('/api/records', async (request, reply) => {
+  fastify.get('/', async (request) => {
     const { date } = request.query as { date?: string }
-    const records = await recordStore.list(date)
-    return records
+    return recordStore.list(date)
   })
 
   // POST /api/records - 创建新记录
-  fastify.post('/api/records', async (request, reply) => {
+  fastify.post('/', async (request, reply) => {
     const body = request.body as {
-      type: 'wn' | 'hs' | 'db' | 'xb' | 'sj'
+      type: RecordType
       ml?: string
       img?: string
       h?: string
@@ -31,8 +30,8 @@ const records: FastifyPluginAsync = async (fastify): Promise<void> => {
     return record
   })
 
-  // DELETE /api/records/:id - 删除记录
-  fastify.delete('/api/records/:id', async (request, reply) => {
+  // DELETE /api/records/:id - 删除指定记录
+  fastify.delete('/:id', async (request, reply) => {
     const { id } = request.params as { id: string }
     const deleted = await recordStore.delete(id)
     if (!deleted) {
@@ -43,7 +42,7 @@ const records: FastifyPluginAsync = async (fastify): Promise<void> => {
   })
 
   // DELETE /api/records - 清空所有记录
-  fastify.delete('/api/records', async (request, reply) => {
+  fastify.delete('/', async (_request, reply) => {
     await recordStore.clear()
     reply.code(204)
   })
