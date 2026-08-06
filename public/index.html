@@ -10,20 +10,48 @@
 <style>
     /* ==================== CSS 变量（可配置主题） ==================== */
     :root {
-        --bg-primary: #272727;
-        --bg-secondary: #1e1e1e;
-        --bg-tertiary: #2a2a2a;
-        --accent: #4ECDC4;
-        --text-primary: #fff;
-        --text-secondary: rgba(255, 255, 255, 0.5);
-        --text-muted: #888;
-        --border: #333;
-        --card-bg: rgba(255, 255, 255, 0.1);
-        --modal-bg: #fff;
-        --modal-text: #333;
-        --modal-muted: #999;
-        --shadow-light: 0 2px 6px rgba(0, 0, 0, 0.15);
-        --shadow-medium: 0 8px 20px rgba(0, 0, 0, 0.35);
+        /* 背景色 */
+        --bg-primary: #272727;           /* 主背景色 */
+        --bg-secondary: #1e1e1e;         /* 次级背景色（顶部栏） */
+        --bg-tertiary: #2a2a2a;          /* 三级背景色（标签页） */
+        /* 主题色 */
+        --accent: #4ECDC4;               /* 主题强调色 */
+        /* 文字颜色 */
+        --text-primary: #fff;            /* 主文字颜色 */
+        --text-secondary: rgba(255, 255, 255, 0.5);  /* 次级文字颜色 */
+        --text-muted: #888;              /* 弱化文字颜色 */
+        /* 边框颜色 */
+        --border: #333;                  /* 边框色 */
+        --border-light: #f5f5f5;         /* 浅边框色（列表项） */
+        --border-list: #eee;             /* 列表边框色 */
+        /* 卡片颜色 */
+        --card-bg: rgba(255, 255, 255, 0.1);  /* 卡片背景色 */
+        /* 弹窗颜色 */
+        --modal-bg: #fff;                /* 弹窗背景色 */
+        --modal-text: #333;              /* 弹窗文字颜色 */
+        --modal-muted: #999;             /* 弹窗弱化文字颜色 */
+        /* 按钮颜色 */
+        --btn-cancel-bg: #f0f0f0;        /* 取消按钮背景色 */
+        --btn-cancel-text: #666;         /* 取消按钮文字颜色 */
+        --btn-confirm-bg: var(--accent);  /* 确认按钮背景色 */
+        --btn-confirm-text: var(--text-primary);  /* 确认按钮文字颜色 */
+        --btn-danger: #e74c3c;           /* 危险操作颜色（删除） */
+        /* 阴影 */
+        --shadow-light: 0 2px 6px rgba(0, 0, 0, 0.15);   /* 轻阴影 */
+        --shadow-medium: 0 8px 20px rgba(0, 0, 0, 0.35);  /* 中阴影 */
+        /* 图片查看器 */
+        --viewer-bg: rgba(0, 0, 0, 0.9);  /* 图片查看器背景 */
+        --viewer-control-bg: rgba(255, 255, 255, 0.2);  /* 控件背景色 */
+        --viewer-control-hover: rgba(255, 255, 255, 0.3);  /* 控件悬停色 */
+        --viewer-zoom-text: rgba(255, 255, 255, 0.7);    /* 缩放提示文字色 */
+        /* 标签页悬停 */
+        --tab-hover-bg: #333;            /* 标签页悬停背景 */
+        --tab-hover-text: #ccc;          /* 标签页悬停文字 */
+        /* 输入框 */
+        --input-border: #ddd;            /* 输入框边框色 */
+        --input-text: #666;              /* 输入框标签文字色 */
+        /* Toast */
+        --toast-bg: rgba(0, 0, 0, 0.75);  /* Toast 背景色 */
     }
 
     * {
@@ -54,7 +82,7 @@
         top: 60px;
         left: 50%;
         transform: translateX(-50%) translateY(-20px);
-        background: rgba(0, 0, 0, 0.75);
+        background: var(--toast-bg);
         color: var(--text-primary);
         padding: 10px 20px;
         border-radius: 8px;
@@ -96,12 +124,10 @@
         background-color: var(--card-bg);
     }
 
-
     .card__title {
         font-size: 14px;
         opacity: 0.9;
         color: var(--text-secondary);
-
     }
 
     .card__count {
@@ -161,13 +187,13 @@
     }
 
     .btn-cancel {
-        background: #f0f0f0;
-        color: #666;
+        background: var(--btn-cancel-bg);
+        color: var(--btn-cancel-text);
     }
 
     .btn-confirm {
-        background: var(--accent);
-        color: var(--text-primary);
+        background: var(--btn-confirm-bg);
+        color: var(--btn-confirm-text);
     }
 
     /* ==================== 表单字段 ==================== */
@@ -181,14 +207,14 @@
     .form-field label {
         display: block;
         font-size: 13px;
-        color: #666;
+        color: var(--input-text);
         margin-bottom: 6px;
     }
 
     .form-field input[type=number] {
         width: 100%;
         padding: 8px 10px;
-        border: 1px solid #ddd;
+        border: 1px solid var(--input-border);
         border-radius: 8px;
         font-size: 14px;
         box-sizing: border-box;
@@ -247,8 +273,8 @@
     }
 
     .date-tab:hover {
-        background: #333;
-        color: #ccc;
+        background: var(--tab-hover-bg);
+        color: var(--tab-hover-text);
     }
 
     .date-tab.active {
@@ -271,7 +297,7 @@
         justify-content: space-between;
         align-items: center;
         padding-bottom: 12px;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid var(--border-list);
         margin-bottom: 12px;
     }
 
@@ -300,7 +326,7 @@
         display: flex;
         align-items: flex-start;
         padding: 10px 0;
-        border-bottom: 1px solid #f5f5f5;
+        border-bottom: 1px solid var(--border-light);
     }
 
     .list-item:last-child {
@@ -334,13 +360,13 @@
 
     .list-item__empty {
         font-size: 13px;
-        color: #bbb;
+        color: var(--text-muted);
         padding-top: 4px;
     }
 
     .list-empty {
         text-align: center;
-        color: #aaa;
+        color: var(--text-muted);
         padding: 40px 0;
         font-size: 14px;
     }
@@ -349,7 +375,7 @@
     .img-viewer {
         position: fixed;
         inset: 0;
-        background: rgba(0, 0, 0, 0.9);
+        background: var(--viewer-bg);
         display: none;
         z-index: 3000;
         justify-content: center;
@@ -368,7 +394,7 @@
         right: 20px;
         width: 40px;
         height: 40px;
-        background: rgba(255, 255, 255, 0.2);
+        background: var(--viewer-control-bg);
         border: none;
         border-radius: 50%;
         color: var(--text-primary);
@@ -381,7 +407,7 @@
     }
 
     .img-viewer__close:hover {
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--viewer-control-hover);
     }
 
     .img-viewer__zoom-controls {
@@ -397,7 +423,7 @@
     .img-viewer__zoom-btn {
         width: 44px;
         height: 44px;
-        background: rgba(255, 255, 255, 0.2);
+        background: var(--viewer-control-bg);
         border: none;
         border-radius: 50%;
         color: var(--text-primary);
@@ -409,7 +435,7 @@
     }
 
     .img-viewer__zoom-btn:hover {
-        background: rgba(255, 255, 255, 0.3);
+        background: var(--viewer-control-hover);
     }
 
     .img-viewer__zoom-level {
@@ -417,7 +443,7 @@
         bottom: 80px;
         left: 50%;
         transform: translateX(-50%);
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--viewer-zoom-text);
         font-size: 14px;
         z-index: 3001;
     }
@@ -482,47 +508,69 @@
     </div>
 
     <script>
+        /**
+         * @file 宝宝日常记录 - 前端主逻辑
+         * @description 包含转盘绘制、数据管理、图片查看等功能
+         */
+
         /* ==================== 全局配置（可修改） ==================== */
+
+        /**
+         * 应用配置对象
+         * @description 所有可调整的参数都集中在此处
+         */
         const AppConfig = {
-            // Canvas 相关
+            /** Canvas 绘制相关配置 */
             canvas: {
-                aspectRatio: 0.5,         // 画布高度/宽度比例
-                duration: 450,            // 动画时长 ms
-                swipeThreshold: 30,       // 滑动判定阈值 px
-                tapThreshold: 15,         // 点击判定阈值 px
-                labelRadiusRatio: 0.62,   // 标签半径占比
-                labelFontRatio: 0.11,     // 标签字体占比
-                btnRadiusRatio: 0.48,      // 按钮半径占比
-                btnFontRatio: 0.6,        // 按钮字体占比
-                btnHitTolerance: 10,      // 按钮点击容差 px
-                innerRadiusRatio: 0.52,   // 圆心空白大小（内半径占比）
-                sectorGap: 8,              // 扇形间距（像素，等宽）
+                aspectRatio: 0.5,         /** 画布高度/宽度比例 */
+                duration: 450,            /** 动画时长（毫秒） */
+                swipeThreshold: 30,       /** 滑动判定阈值（像素） */
+                tapThreshold: 15,         /** 点击判定阈值（像素） */
+                labelRadiusRatio: 0.62,   /** 标签半径占比（相对于外半径） */
+                labelFontRatio: 0.11,     /** 标签字体大小占比（相对于外半径） */
+                btnRadiusRatio: 0.48,     /** 按钮半径占比（相对于外半径） */
+                btnFontRatio: 0.6,        /** 按钮字体大小占比（相对于按钮半径） */
+                btnHitTolerance: 10,      /** 按钮点击容差（像素） */
+                innerRadiusRatio: 0.52,   /** 圆心空白大小（内半径占外半径的比例） */
+                sectorGap: 8,             /** 扇形间距（像素，等宽） */
                 shadow: {
-                    btn: { color: 'rgba(0,0,0,0.35)', blur: 20, offsetY: -6 },
+                    btn: { color: 'rgba(0,0,0,0.35)', blur: 20, offsetY: -6 }, /** 按钮阴影配置 */
                 },
                 colors: {
-                    center: '#272727',
-                    centerDark: '#272727',
-                    btnText: '#7d7d7f',
-                    btnStroke: 'rgba(0,0,0,0.1)',
-                    labelActive: 'rgba(255,255,255,1)',
-                    labelInactive: 'rgba(255,255,255,0.5)',
+                    center: '#272727',           /** 按钮中心渐变起始色 */
+                    centerDark: '#272727',       /** 按钮中心渐变结束色 */
+                    btnText: '#7d7d7f',          /** 按钮文字颜色 */
+                    btnStroke: 'rgba(0,0,0,0.1)', /** 按钮边框颜色 */
+                    labelActive: 'rgba(255,255,255,1)', /** 选中扇形标签颜色 */
+                    labelInactive: 'rgba(255,255,255,0.5)', /** 未选中扇形标签颜色 */
                 },
             },
-            // 卡片网格
+            /** 卡片网格配置 */
             grid: {
-                columns: 4,
-                gap: 12,
+                columns: 4, /** 网格列数 */
+                gap: 12,    /** 卡片间距（像素） */
             },
-            // 图片查看器
+            /** 图片查看器配置 */
             viewer: {
-                minScale: 0.5,
-                maxScale: 5,
-                scaleStep: 0.25,
+                minScale: 0.5,  /** 最小缩放比例 */
+                maxScale: 5,    /** 最大缩放比例 */
+                scaleStep: 0.25, /** 每次缩放步长 */
             },
         };
 
         /* ==================== 数据配置 ==================== */
+
+        /**
+         * 记录类型配置
+         * @type {Array<{type: string, label: string, color: string, options: Array<{key: string, label: string}>}>}
+         * @description 定义转盘扇形和卡片的类型配置
+         * - type: 类型标识符，用于数据存储
+         * - label: 显示的中文标签
+         * - color: 扇形和卡片的背景色（RGBA格式）
+         * - options: 该类型的输入字段配置
+         *   - key: 字段键名（如 'ml', 'img', 'h'）
+         *   - label: 字段标签（单位等）
+         */
         const options = [
             { type: 'wn', label: '喂奶', color: 'rgba(255,138,128,0.5)', options: [{ key: 'ml', label: 'ml' }] },     // 暖粉：奶的温暖感
             { type: 'hs', label: '喝水', color: 'rgba(79,165,255,0.5)', options: [{ key: 'ml', label: 'ml' }] },     // 蓝色：水的清澈感
@@ -531,9 +579,19 @@
             { type: 'sj', label: '睡觉', color: 'rgba(149,117,205,0.5)', options: [{ key: 'h', label: 'h' }] },      // 紫色：睡眠的夜晚感
         ];
 
+        /** @type {Array<Object>} 当前加载的记录数据 */
         let values = [];
 
         /* ==================== API 接口 ==================== */
+
+        /**
+         * 通用请求方法
+         * @param {string} url - 请求URL
+         * @param {Object|null} options - fetch请求配置（method, headers, body等）
+         * @param {string} defaultMsg - 请求失败时的默认错误信息
+         * @returns {Promise<any>} 响应数据中的data字段
+         * @throws {Error} 当请求失败或返回非0错误码时抛出异常
+         */
         async function request(url, options, defaultMsg) {
             const res = await fetch(url, options);
             let json;
@@ -541,11 +599,32 @@
             if (json.code !== 0) throw new Error(json.message || defaultMsg);
             return json.data;
         }
+
+        /**
+         * API 接口集合
+         * @description 封装所有后端接口调用
+         */
         const API = {
+            /**
+             * 获取记录列表
+             * @param {string} [date] - 可选，按日期筛选（格式：MM/DD）
+             * @returns {Promise<Array<Object>>} 记录列表
+             */
             list(date) {
                 const url = date ? `/api/records?date=${encodeURIComponent(date)}` : '/api/records';
                 return request(url, null, '加载数据失败');
             },
+
+            /**
+             * 创建新记录
+             * @param {Object} data - 记录数据
+             * @param {string} data.type - 记录类型标识符
+             * @param {number} data.timestamp - 时间戳
+             * @param {string} [data.ml] - 毫升数（喂奶/喝水）
+             * @param {string} [data.h] - 小时数（睡觉）
+             * @param {string} [data.img] - 图片URL
+             * @returns {Promise<Object>} 创建的记录
+             */
             create(data) {
                 return request('/api/records', {
                     method: 'POST',
@@ -553,12 +632,29 @@
                     body: JSON.stringify(data),
                 }, '创建记录失败');
             },
+
+            /**
+             * 删除指定记录
+             * @param {string} id - 记录ID
+             * @returns {Promise<void>}
+             */
             remove(id) {
                 return request(`/api/records/${id}`, { method: 'DELETE' }, '删除记录失败');
             },
+
+            /**
+             * 清空所有记录
+             * @returns {Promise<void>}
+             */
             clear() {
                 return request('/api/records', { method: 'DELETE' }, '清空记录失败');
             },
+
+            /**
+             * 上传图片文件
+             * @param {File} file - 图片文件对象
+             * @returns {Promise<string>} 上传后的图片URL
+             */
             async upload(file) {
                 const formData = new FormData();
                 formData.append('file', file);
@@ -571,6 +667,11 @@
             }
         };
 
+        /**
+         * 加载所有记录数据
+         * @description 从API获取最新数据，失败时显示错误提示
+         * @returns {Promise<void>}
+         */
         async function loadData() {
             try {
                 values = await API.list();
@@ -580,6 +681,11 @@
             }
         }
 
+        /**
+         * 刷新所有界面数据
+         * @param {string} [dateStr] - 可选，指定刷新的日期
+         * @returns {Promise<void>}
+         */
         async function refreshAll(dateStr) {
             await loadData();
             if (dateStr) state.selectedDate = dateStr;
@@ -588,53 +694,84 @@
         }
 
         /* ==================== 常量 ==================== */
+
+        /** @type {number} 半圆角度值 */
         const HALF_PI = Math.PI / 2;
+        /** @type {number} 全圆角度值 */
         const TAU = Math.PI * 2;
+
+        /** @description 配置快捷引用 */
         const { canvas: CC, grid, viewer } = AppConfig;
 
         /* ==================== DOM 引用 ==================== */
+
+        /**
+         * 获取DOM元素快捷方法
+         * @param {string} id - 元素ID
+         * @returns {HTMLElement} DOM元素
+         */
         const $ = id => document.getElementById(id);
+
+        /** @type {HTMLCanvasElement} 画布元素 */
         const canvas = $('cvs');
+        /** @type {CanvasRenderingContext2D} 画布2D上下文 */
         const ctx = canvas.getContext('2d');
 
         /* ==================== 状态管理 ==================== */
+
+        /**
+         * 全局状态对象
+         * @description 存储所有可变状态
+         */
         const state = {
-            // Canvas 状态
-            centerX: 0,
-            centerY: 0,
-            radius: 0,
-            btnRadius: 0,
-            activeIndex: 0,
-            rotation: 0,
-            animFrom: 0,
-            animStart: null,
-            animating: false,
-            startX: 0,
-            startY: 0,
-            tracking: false,
-            // 业务状态
-            selectedDate: null,
-            currentOption: null,
-            // 图片查看器
+            /** Canvas 绘制状态 */
+            centerX: 0,      /** 画布中心点X坐标 */
+            centerY: 0,      /** 画布中心点Y坐标 */
+            radius: 0,       /** 转盘外半径 */
+            btnRadius: 0,    /** 中心按钮半径 */
+            activeIndex: 0,  /** 当前选中的扇形索引 */
+            rotation: 0,     /** 当前旋转角度 */
+            animFrom: 0,     /** 动画起始角度 */
+            animStart: null,  /** 动画开始时间戳 */
+            animating: false, /** 是否正在播放动画 */
+            startX: 0,       /** 触摸起始X坐标 */
+            startY: 0,       /** 触摸起始Y坐标 */
+            tracking: false, /** 是否正在追踪触摸 */
+
+            /** 业务状态 */
+            selectedDate: null, /** 当前选中的日期（MM/DD格式） */
+            currentOption: null, /** 当前操作的记录类型配置 */
+
+            /** 图片查看器状态 */
             viewer: {
-                scale: 1,
-                translateX: 0,
-                translateY: 0,
-                isDragging: false,
-                isPinching: false,
-                startX: 0,
-                startY: 0,
-                pinchDist: 0,
-                pinchScale: 1,
+                scale: 1,          /** 当前缩放比例 */
+                translateX: 0,     /** X轴偏移量 */
+                translateY: 0,     /** Y轴偏移量 */
+                isDragging: false, /** 是否正在拖拽 */
+                isPinching: false,/** 是否正在双指缩放 */
+                startX: 0,         /** 拖拽起始X坐标 */
+                startY: 0,         /** 拖拽起始Y坐标 */
+                pinchDist: 0,      /** 双指初始距离 */
+                pinchScale: 1,     /** 双指缩放初始比例 */
             },
         };
 
+        /** @type {number} 扇形总数 */
         const sectorCount = options.length;
+        /** @type {number} 每个扇形的角度（弧度） */
         const sectorAngle = TAU / sectorCount;
 
         /* ==================== 工具函数库 ==================== */
 
-        // 阴影绘制
+        /**
+         * 带阴影绘制函数
+         * @param {Object} shadow - 阴影配置对象
+         * @param {string} shadow.color - 阴影颜色
+         * @param {number} shadow.blur - 阴影模糊半径
+         * @param {number} [shadow.offsetX=0] - 阴影X偏移
+         * @param {number} [shadow.offsetY=0] - 阴影Y偏移
+         * @param {Function} drawFn - 实际绘制函数
+         */
         function withShadow(shadow, drawFn) {
             ctx.save();
             ctx.shadowColor = shadow.color;
@@ -645,7 +782,16 @@
             ctx.restore();
         }
 
-        // 绘制扇形路径（支持内半径、等宽间距）
+        /**
+         * 绘制扇形路径（支持内半径、等宽间距）
+         * @param {number} cx - 圆心X坐标
+         * @param {number} cy - 圆心Y坐标
+         * @param {number} outerR - 外半径
+         * @param {number} startAngle - 起始角度（弧度）
+         * @param {number} endAngle - 结束角度（弧度）
+         * @param {number} innerR - 内半径（0表示实心扇形）
+         * @description 等宽间距：内外边缘按像素分别计算角度偏移，保证间距宽度一致
+         */
         function drawArc(cx, cy, outerR, startAngle, endAngle, innerR) {
             const gap = CC.sectorGap;
 
@@ -684,7 +830,14 @@
             }
         }
 
-        // 绘制居中文字
+        /**
+         * 绘制居中文字
+         * @param {string} text - 要绘制的文字
+         * @param {number} x - 文字中心X坐标
+         * @param {number} y - 文字中心Y坐标
+         * @param {string} font - 字体设置（如 '600 24px sans-serif'）
+         * @param {string} color - 文字颜色
+         */
         function drawText(text, x, y, font, color) {
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -693,7 +846,12 @@
             ctx.fillText(text, x, y);
         }
 
-        // 坐标转换
+        /**
+         * 将客户端坐标转换为画布坐标
+         * @param {number} clientX - 客户端X坐标（相对于视口）
+         * @param {number} clientY - 客户端Y坐标（相对于视口）
+         * @returns {{x: number, y: number}} 画布坐标
+         */
         function toCanvasPoint(clientX, clientY) {
             const rect = canvas.getBoundingClientRect();
             return {
@@ -702,7 +860,10 @@
             };
         }
 
-        // Toast 提示
+        /**
+         * 显示Toast提示
+         * @param {string} message - 提示消息内容
+         */
         function showToast(message) {
             const toast = $('toast');
             toast.textContent = message;
@@ -710,34 +871,64 @@
             setTimeout(() => toast.classList.remove('show'), 2000);
         }
 
-        // 通用弹窗控制
+        /**
+         * 打开指定弹窗
+         * @param {string} id - 弹窗元素ID
+         */
         function openModal(id) { $(id).classList.add('show'); }
+
+        /**
+         * 关闭指定弹窗
+         * @param {string} id - 弹窗元素ID
+         */
         function closeModal(id) { $(id).classList.remove('show'); }
 
-        // 格式化日期为 MM/DD
+        /**
+         * 格式化时间戳为日期字符串（MM/DD格式）
+         * @param {number} ts - 时间戳（毫秒）
+         * @returns {string} 格式化后的日期
+         */
         function formatDate(ts) {
             const d = new Date(ts);
             return `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}`;
         }
 
-        // 格式化时间为 hh:mm:ss
+        /**
+         * 格式化时间戳为时间字符串（hh:mm:ss格式）
+         * @param {number} ts - 时间戳（毫秒）
+         * @returns {string} 格式化后的时间
+         */
         function formatTime(ts) {
             const d = new Date(ts);
             const p = n => String(n).padStart(2, '0');
             return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
         }
 
-        // 判断时间戳是否属于指定日期
+        /**
+         * 判断时间戳是否属于指定日期
+         * @param {number} ts - 时间戳（毫秒）
+         * @param {string} dateStr - 日期字符串（MM/DD格式）
+         * @returns {boolean} 是否属于该日期
+         */
         function isDate(ts, dateStr) {
             return formatDate(ts) === dateStr;
         }
 
-        // 获取今日日期
+        /**
+         * 获取今日日期字符串
+         * @returns {string} 今日日期（MM/DD格式）
+         */
         function todayStr() {
             return formatDate(Date.now());
         }
 
-        // DOM 创建辅助
+        /**
+         * 创建DOM元素
+         * @param {string} tag - 标签名（如 'div', 'span'）
+         * @param {string} [className] - CSS类名
+         * @param {string} [text] - 文本内容
+         * @returns {HTMLElement} 创建的元素
+         */
         function createEl(tag, className, text) {
             const el = document.createElement(tag);
             if (className) el.className = className;
@@ -745,7 +936,13 @@
             return el;
         }
 
-        // 创建带点击事件的元素
+        /**
+         * 创建带点击事件的DOM元素
+         * @param {string} tag - 标签名
+         * @param {string} [className] - CSS类名
+         * @param {Function} [onClick] - 点击事件处理函数
+         * @returns {HTMLElement} 创建的元素
+         */
         function createClickable(tag, className, onClick) {
             const el = createEl(tag, className);
             if (onClick) el.addEventListener('click', onClick);
@@ -754,12 +951,20 @@
 
         /* ==================== Canvas 绘制 ==================== */
 
+        /**
+         * 重绘整个画布
+         * @description 清空画布后依次绘制扇形和中心按钮
+         */
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawSectors();
             drawSemicircleButton();
         }
 
+        /**
+         * 绘制所有扇形
+         * @description 根据选中索引高亮当前扇形
+         */
         function drawSectors() {
             const highlight = getCurrentIndex();
             const innerR = state.radius * CC.innerRadiusRatio;
@@ -775,6 +980,12 @@
             }
         }
 
+        /**
+         * 绘制扇形上的标签文字
+         * @param {number} start - 扇形起始角度（弧度）
+         * @param {string} label - 标签文字内容
+         * @param {boolean} isActive - 是否为选中状态
+         */
         function drawSectorLabel(start, label, isActive) {
             const midAngle = start + sectorAngle / 2;
             const r = state.radius * CC.labelRadiusRatio;
@@ -786,6 +997,10 @@
                 isActive ? CC.colors.labelActive : CC.colors.labelInactive);
         }
 
+        /**
+         * 绘制中心半圆按钮
+         * @description 包含按钮背景（带阴影和渐变）、边框和文字
+         */
         function drawSemicircleButton() {
             state.btnRadius = state.radius * CC.btnRadiusRatio;
             const { centerX: cx, centerY: cy, btnRadius: br } = state;
@@ -814,14 +1029,27 @@
             drawText('+', cx, cy - br * 0.35, `bold ${fontSize}px sans-serif`, CC.colors.btnText);
         }
 
+        /**
+         * 获取当前选中的扇形索引
+         * @returns {number} 索引值（0 到 sectorCount-1）
+         */
         function getCurrentIndex() {
             return ((state.activeIndex % sectorCount) + sectorCount) % sectorCount;
         }
 
         /* ==================== 动画 ==================== */
 
+        /**
+         * 缓动函数（ease-out cubic）
+         * @param {number} t - 进度值（0 到 1）
+         * @returns {number} 缓动后的值
+         */
         const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
 
+        /**
+         * 动画帧回调
+         * @param {number} ts - 当前时间戳
+         */
         function animate(ts) {
             if (state.animStart === null) state.animStart = ts;
             const t = Math.min((ts - state.animStart) / CC.duration, 1);
@@ -835,6 +1063,10 @@
             }
         }
 
+        /**
+         * 旋转转盘到指定方向
+         * @param {number} delta - 旋转方向（1为顺时针，-1为逆时针）
+         */
         function rotateTo(delta) {
             if (delta === 0) return;
             state.activeIndex += delta;
@@ -848,11 +1080,20 @@
 
         /* ==================== 交互 ==================== */
 
+        /**
+         * 判断点是否在中心按钮内
+         * @param {{x: number, y: number}} pt - 画布坐标点
+         * @returns {boolean} 是否在按钮范围内
+         */
         function isInsideButton(pt) {
             const dist = Math.hypot(pt.x - state.centerX, pt.y - state.centerY);
             return dist <= state.btnRadius + CC.btnHitTolerance && pt.y <= state.centerY;
         }
 
+        /**
+         * 指针按下事件处理
+         * @param {PointerEvent} e - 指针事件
+         */
         function onPointerDown(e) {
             state.startX = e.clientX;
             state.startY = e.clientY;
@@ -860,6 +1101,10 @@
             canvas.setPointerCapture(e.pointerId);
         }
 
+        /**
+         * 指针抬起事件处理
+         * @param {PointerEvent} e - 指针事件
+         */
         function onPointerUp(e) {
             if (!state.tracking) return;
             state.tracking = false;
@@ -883,6 +1128,10 @@
 
         /* ==================== 日期 Tab ==================== */
 
+        /**
+         * 获取所有可用的日期列表
+         * @returns {string[]} 排序后的日期数组（MM/DD格式）
+         */
         function getAllDates() {
             const dates = new Set([todayStr()]);
             values.forEach(v => dates.add(formatDate(v.timestamp)));
@@ -893,6 +1142,10 @@
             });
         }
 
+        /**
+         * 渲染日期选项卡
+         * @description 根据所有可用日期渲染可点击的选项卡
+         */
         function renderDateTabs() {
             const dates = getAllDates();
             const list = $('dateTabsList');
@@ -915,6 +1168,11 @@
 
         /* ==================== 卡片列表 ==================== */
 
+        /**
+         * 获取指定日期各类型记录的数量统计
+         * @param {string} dateStr - 日期字符串（MM/DD格式）
+         * @returns {Object} 各类型的数量统计对象
+         */
         function getDateCounts(dateStr) {
             const counts = {};
             options.forEach(opt => { counts[opt.type] = 0; });
@@ -926,6 +1184,10 @@
             return counts;
         }
 
+        /**
+         * 渲染卡片列表
+         * @description 显示当前选中日期的各类型记录统计
+         */
         function renderCards() {
             const dateStr = state.selectedDate || todayStr();
             const counts = getDateCounts(dateStr);
@@ -944,12 +1206,23 @@
 
         /* ==================== 数据列表弹窗 ==================== */
 
+        /**
+         * 获取指定日期和类型的数据列表
+         * @param {string} dateStr - 日期字符串（MM/DD格式）
+         * @param {string} type - 记录类型
+         * @returns {Array} 排序后的数据数组
+         */
         function getDataByType(dateStr, type) {
             return values
                 .filter(v => isDate(v.timestamp, dateStr) && v.type === type)
                 .sort((a, b) => a.timestamp - b.timestamp);
         }
 
+        /**
+         * 打开数据列表弹窗
+         * @param {Object} option - 选项配置对象
+         * @param {string} dateStr - 日期字符串（MM/DD格式）
+         */
         function openDataList(option, dateStr) {
             $('listModalTitle').textContent = `${option.label} - ${dateStr}`;
             const content = $('listModalContent');
@@ -1019,6 +1292,10 @@
 
         /* ==================== 图片查看器 ==================== */
 
+        /**
+         * 重置图片查看器状态
+         * @description 将缩放和偏移恢复到初始值
+         */
         function resetViewer() {
             state.viewer.scale = 1;
             state.viewer.translateX = 0;
@@ -1026,18 +1303,30 @@
             applyViewerTransform();
         }
 
+        /**
+         * 应用查看器变换
+         * @description 根据当前状态更新图片的CSS变换
+         */
         function applyViewerTransform() {
             const v = state.viewer;
             $('imgViewerImg').style.transform = `translate(${v.translateX}px, ${v.translateY}px) scale(${v.scale})`;
             $('imgViewerZoomLevel').textContent = `${Math.round(v.scale * 100)}%`;
         }
 
+        /**
+         * 打开图片查看器
+         * @param {string} src - 图片URL地址
+         */
         function openImgViewer(src) {
             $('imgViewerImg').src = src;
             resetViewer();
             openModal('imgViewer');
         }
 
+        /**
+         * 设置查看器缩放比例
+         * @param {number} newScale - 新的缩放比例
+         */
         function setViewerScale(newScale) {
             const v = state.viewer;
             v.scale = Math.max(viewer.minScale, Math.min(viewer.maxScale, newScale));
@@ -1137,6 +1426,13 @@
 
         /* ==================== 输入弹窗 ==================== */
 
+        /**
+         * 创建数字输入字段
+         * @param {Object} f - 字段配置对象
+         * @param {string} f.label - 字段标签
+         * @param {string} f.key - 字段键名
+         * @returns {HTMLElement} 表单字段元素
+         */
         function createNumberField(f) {
             const wrap = createEl('div', 'form-field');
             const label = createEl('label', null, f.label);
@@ -1150,6 +1446,11 @@
             return wrap;
         }
 
+        /**
+         * 创建图片上传字段
+         * @param {Object} f - 字段配置对象
+         * @returns {HTMLElement} 表单字段元素
+         */
         function createImageField(f) {
             const wrap = createEl('div', 'form-field');
             const input = createEl('input');
@@ -1170,6 +1471,10 @@
             return wrap;
         }
 
+        /**
+         * 打开输入弹窗
+         * @param {Object} option - 选项配置对象
+         */
         function openInputDialog(option) {
             state.currentOption = option;
             $('inputModalTitle').textContent = option.label;
@@ -1183,11 +1488,19 @@
             openModal('inputModal');
         }
 
+        /**
+         * 关闭输入弹窗
+         */
         function closeInputDialog() {
             closeModal('inputModal');
             state.currentOption = null;
         }
 
+        /**
+         * 提交输入表单数据
+         * @description 验证并保存用户输入的记录
+         * @returns {Promise<void>}
+         */
         async function submitInput() {
             const opt = state.currentOption;
             if (!opt) return;
@@ -1228,6 +1541,11 @@
 
         /* ==================== 初始化 ==================== */
 
+        /**
+         * 应用初始化函数
+         * @description 加载数据并渲染页面
+         * @returns {Promise<void>}
+         */
         async function init() {
             await loadData();
             renderDateTabs();
@@ -1235,6 +1553,10 @@
             resize();
         }
 
+        /**
+         * 调整画布大小
+         * @description 根据窗口尺寸重新设置画布并重绘
+         */
         function resize() {
             const w = window.innerWidth;
             canvas.width = w;
