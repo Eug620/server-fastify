@@ -10,7 +10,6 @@
 <style>
     /* ==================== CSS 变量（可配置主题） ==================== */
     :root {
-        /* --bg-primary: #272727; */
         --bg-primary: #272727;
         --bg-secondary: #1e1e1e;
         --bg-tertiary: #2a2a2a;
@@ -496,6 +495,8 @@
                 btnRadiusRatio: 0.48,      // 按钮半径占比
                 btnFontRatio: 0.6,        // 按钮字体占比
                 btnHitTolerance: 10,      // 按钮点击容差 px
+                innerRadiusRatio: 0.52,   // 圆心空白大小（内半径占比）
+                sectorGap: 8,              // 扇形间距（像素，等宽）
                 shadow: {
                     btn: { color: 'rgba(0,0,0,0.35)', blur: 20, offsetY: -6 },
                 },
@@ -644,12 +645,43 @@
             ctx.restore();
         }
 
-        // 绘制扇形路径
-        function drawArc(cx, cy, r, start, end) {
+        // 绘制扇形路径（支持内半径、等宽间距）
+        function drawArc(cx, cy, outerR, startAngle, endAngle, innerR) {
+            const gap = CC.sectorGap;
+
+            // 如果内半径太小，绘制实心扇形
+            const isRing = innerR > 1;
+            const effectiveInnerR = isRing ? innerR : 0;
+
+            // 等宽间距：内外边缘按像素分别计算角度偏移
+            const outerHalfAngle = gap / outerR / 2;
+            const innerHalfAngle = isRing ? gap / effectiveInnerR / 2 : 0;
+
+            const outerStart = startAngle + outerHalfAngle;
+            const outerEnd = endAngle - outerHalfAngle;
+            const angleDiff = outerEnd - outerStart;
+
+            if (angleDiff <= 0) return;
+
             ctx.beginPath();
-            ctx.moveTo(cx, cy);
-            ctx.arc(cx, cy, r, start, end, false);
-            ctx.closePath();
+            if (isRing) {
+                const innerStart = startAngle + innerHalfAngle;
+                const innerEnd = endAngle - innerHalfAngle;
+
+                // 1. 外弧
+                ctx.arc(cx, cy, outerR, outerStart, outerEnd, false);
+                // 2. 直线到内弧终点
+                ctx.lineTo(cx + Math.cos(innerEnd) * effectiveInnerR, cy + Math.sin(innerEnd) * effectiveInnerR);
+                // 3. 内弧（反向）
+                ctx.arc(cx, cy, effectiveInnerR, innerEnd, innerStart, true);
+                // 4. 直线回到外弧起点
+                ctx.closePath();
+            } else {
+                // 实心扇形
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, outerR, outerStart, outerEnd, false);
+                ctx.closePath();
+            }
         }
 
         // 绘制居中文字
@@ -730,11 +762,12 @@
 
         function drawSectors() {
             const highlight = getCurrentIndex();
+            const innerR = state.radius * CC.innerRadiusRatio;
             for (let i = 0; i < sectorCount; i++) {
                 const start = (i - 0.5) * sectorAngle - HALF_PI + state.rotation;
                 const end = start + sectorAngle;
 
-                drawArc(state.centerX, state.centerY, state.radius, start, end);
+                drawArc(state.centerX, state.centerY, state.radius, start, end, innerR);
                 ctx.fillStyle = options[i].color;
                 ctx.fill();
 
