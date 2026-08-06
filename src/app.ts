@@ -1,36 +1,37 @@
 import { join } from 'node:path'
-import AutoLoad, { AutoloadPluginOptions } from '@fastify/autoload'
-import { FastifyPluginAsync, FastifyServerOptions } from 'fastify'
+import AutoLoad from '@fastify/autoload'
+import Fastify from 'fastify'
 import { config } from './config'
 
-export interface AppOptions extends FastifyServerOptions, Partial<AutoloadPluginOptions> {
-  port?: number | string
-  host?: string
-}
-
-const options: AppOptions = {
-  port: config.port,
-  host: config.host,
+const app = Fastify({
   logger: config.logger,
   bodyLimit: config.bodyLimit,
   trustProxy: config.trustProxy,
   requestTimeout: config.requestTimeout,
+})
+
+app.register(AutoLoad, {
+  dir: join(__dirname, 'plugins'),
+})
+
+app.register(AutoLoad, {
+  dir: join(__dirname, 'routes'),
+})
+
+const start = async () => {
+  try {
+    await app.listen({ port: config.port, host: config.host })
+  } catch (err) {
+    app.log.error(err)
+    process.exit(1)
+  }
 }
 
-const app: FastifyPluginAsync<AppOptions> = async (
-  fastify,
-  opts
-): Promise<void> => {
-  void fastify.register(AutoLoad, {
-    dir: join(__dirname, 'plugins'),
-    options: opts
-  })
+const isMain = process.argv[1]?.match(/app\.(js|ts)$/) ?? false
 
-  void fastify.register(AutoLoad, {
-    dir: join(__dirname, 'routes'),
-    options: opts
-  })
+if (isMain) {
+  start()
 }
 
+export { app }
 export default app
-export { app, options }
