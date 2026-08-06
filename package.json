@@ -11,7 +11,8 @@
     "start": "npm run build:ts && node dist/app.js",
     "build:ts": "tsc",
     "watch:ts": "tsc -w",
-    "dev": "node --watch --require ts-node/register src/app.ts"
+    "dev": "node --watch --require ts-node/register src/app.ts",
+    "pm2start": "npm run build:ts && pm2 start ecosystem.config.js"
   },
   "keywords": [],
   "author": "",
