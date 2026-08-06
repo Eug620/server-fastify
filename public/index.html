@@ -532,25 +532,40 @@
         let values = [];
 
         /* ==================== API 接口 ==================== */
+        async function request(url, options, defaultMsg) {
+            const res = await fetch(url, options);
+            let json;
+            try { json = await res.json(); } catch { throw new Error(defaultMsg); }
+            if (json.code !== 0) throw new Error(json.message || defaultMsg);
+            return json.data;
+        }
         const API = {
-            async list(date) {
+            list(date) {
                 const url = date ? `/api/records?date=${encodeURIComponent(date)}` : '/api/records';
-                const res = await fetch(url);
-                if (!res.ok) throw new Error('加载数据失败');
-                return res.json();
+                return request(url, null, '加载数据失败');
             },
-            async create(data) {
-                const res = await fetch('/api/records', {
+            create(data) {
+                return request('/api/records', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data),
-                });
-                if (!res.ok) throw new Error('创建记录失败');
-                return res.json();
+                }, '创建记录失败');
             },
-            async remove(id) {
-                const res = await fetch(`/api/records/${id}`, { method: 'DELETE' });
-                if (!res.ok) throw new Error('删除记录失败');
+            remove(id) {
+                return request(`/api/records/${id}`, { method: 'DELETE' }, '删除记录失败');
+            },
+            clear() {
+                return request('/api/records', { method: 'DELETE' }, '清空记录失败');
+            },
+            async upload(file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                const url = '/api/upload';
+                const res = await fetch(url, { method: 'POST', body: formData });
+                let json;
+                try { json = await res.json(); } catch { throw new Error('文件上传失败'); }
+                if (json.code !== 0) throw new Error(json.message || '文件上传失败');
+                return json.data.url;
             }
         };
 
@@ -558,9 +573,16 @@
             try {
                 values = await API.list();
             } catch (e) {
-                console.error('加载数据失败:', e);
+                showToast(e.message || '加载数据失败');
                 values = [];
             }
+        }
+
+        async function refreshAll(dateStr) {
+            await loadData();
+            if (dateStr) state.selectedDate = dateStr;
+            renderDateTabs();
+            renderCards();
         }
 
         /* ==================== 常量 ==================== */
@@ -943,14 +965,11 @@
                     if (!item.id) { showToast('记录ID缺失'); return; }
                     try {
                         await API.remove(item.id);
-                        const idx = values.findIndex(v => v.id === item.id);
-                        if (idx >= 0) values.splice(idx, 1);
-                        renderDateTabs();
-                        renderCards();
+                        await refreshAll(dateStr);
                         openDataList(option, dateStr);
                         showToast('已删除');
                     } catch (err) {
-                        showToast('删除失败');
+                        showToast(err.message || '删除失败');
                     }
                 });
                 row.appendChild(delBtn);
@@ -1107,13 +1126,9 @@
             input.addEventListener('change', () => {
                 const file = input.files[0];
                 if (!file) return;
-                const reader = new FileReader();
-                reader.onload = () => {
-                    preview.src = reader.result;
-                    preview.style.display = 'block';
-                    input.style.display = 'none';
-                };
-                reader.readAsDataURL(file);
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = 'block';
+                input.style.display = 'none';
             });
 
             wrap.appendChild(input);
@@ -1144,27 +1159,32 @@
             if (!opt) return;
 
             const record = { type: opt.type, ml: '', img: '', h: '', timestamp: Date.now() };
-            (opt.options || []).forEach(f => {
+
+            for (const f of (opt.options || [])) {
                 if (f.key === 'img') {
-                    const preview = $('inputModalBody').querySelector('.form-preview');
-                    record.img = preview && preview.src ? preview.src : '';
+                    const fileInput = $('inputModalBody').querySelector('input[type="file"]');
+                    if (fileInput && fileInput.files[0]) {
+                        try {
+                            record.img = await API.upload(fileInput.files[0]);
+                        } catch (e) {
+                            showToast(e.message || '图片上传失败');
+                            return;
+                        }
+                    }
                 } else {
                     const input = $('inputModalBody').querySelector(`input[data-key="${f.key}"]`);
                     record[f.key] = input ? input.value : '';
                 }
-            });
+            }
 
             try {
-                const saved = await API.create(record);
-                record.id = saved.id;
-                values.push(record);
+                await API.create(record);
                 closeInputDialog();
                 state.selectedDate = todayStr();
-                renderDateTabs();
-                renderCards();
+                await refreshAll();
                 showToast(`已记录: ${opt.label}`);
             } catch (e) {
-                showToast('保存失败，请重试');
+                showToast(e.message || '保存失败，请重试');
                 console.error(e);
             }
         }

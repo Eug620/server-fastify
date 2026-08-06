@@ -19,14 +19,14 @@ const staticPlugin: FastifyPluginAsync = async (fastify) => {
     decorateReply: true,         // 添加 reply.sendFile 方法
   })
 
-  // 处理所有未匹配的路由，返回 index.html（支持 SPA）
+  // 处理所有未匹配的路由
   fastify.setNotFoundHandler((request, reply) => {
-    // 如果是 API 请求返回 404
+    // API 请求返回标准 JSON 错误格式
     if (request.url.startsWith('/api')) {
       reply.code(404)
-      return { error: 'Not Found' }
+      return { code: 1, message: 'Not Found', data: null }
     }
-    // 其他请求返回 index.html
+    // 其他请求返回 index.html（支持前端路由）
     return reply.sendFile('index.html')
   })
 }

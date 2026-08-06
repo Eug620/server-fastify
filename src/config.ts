@@ -27,9 +27,9 @@ export const config = {
   },
 
   // Fastify 服务器选项
-  bodyLimit: 1048576,
+  bodyLimit: 10 * 1024 * 1024,  // 10MB（适配文件上传）
   trustProxy: true,
-  requestTimeout: 0,
+  requestTimeout: 6000,
 }
 
 export type AppConfig = typeof config

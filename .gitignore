@@ -66,3 +66,7 @@ dist
 
 # data files
 data/
+
+# uploaded images under public
+public/*
+!public/index.html
