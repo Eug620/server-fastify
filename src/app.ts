@@ -21,17 +21,30 @@ app.register(AutoLoad, {
 const start = async () => {
   try {
     await app.listen({ port: config.port, host: config.host })
+    if (process.send) {
+      process.send('ready')
+    }
   } catch (err) {
     app.log.error(err)
     process.exit(1)
   }
 }
 
-const isMain = process.argv[1]?.match(/app\.(js|ts)$/) ?? false
-
-if (isMain) {
-  start()
+const shutdown = async (signal: string) => {
+  app.log.info(`Received ${signal}, closing...`)
+  try {
+    await app.close()
+    process.exit(0)
+  } catch (err) {
+    app.log.error(err)
+    process.exit(1)
+  }
 }
+
+process.on('SIGINT', () => shutdown('SIGINT'))
+process.on('SIGTERM', () => shutdown('SIGTERM'))
+
+start()
 
 export { app }
 export default app

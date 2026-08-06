@@ -3,10 +3,13 @@ module.exports = {
     {
       name: 'server-fastify',
       script: './dist/app.js',
+      exec_mode: 'fork',
       instances: 1,
       autorestart: true,
       watch: false,
       max_memory_restart: '1G',
+      wait_ready: true,
+      listen_timeout: 10000,
       env: {
         NODE_ENV: 'production'
       },
