@@ -171,7 +171,7 @@ export function createTimeField() {
             state.editingTimestamp = new Date(dateInput.value).getTime();
             timeText.textContent = formatDateTime(state.editingTimestamp);
         }
-        exitEdit();
+        // exitEdit();
     });
 
     dateInput.addEventListener('keydown', (e) => {
@@ -183,10 +183,6 @@ export function createTimeField() {
     });
 
     dateInput.addEventListener('blur', () => {
-        if (dateInput.value) {
-            state.editingTimestamp = new Date(dateInput.value).getTime();
-            timeText.textContent = formatDateTime(state.editingTimestamp);
-        }
         exitEdit();
     });
 

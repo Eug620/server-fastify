@@ -260,7 +260,10 @@ async function submitInput() {
     const opt = state.currentOption;
     if (!opt) return;
 
-    const ts = state.editingTimestamp || Date.now();
+    const timeInput = $('inputModalBody').querySelector('input[type="datetime-local"]');
+    const ts = (timeInput && timeInput.value)
+        ? new Date(timeInput.value).getTime()
+        : (state.editingTimestamp || Date.now());
     const record = { type: opt.type, ml: '', img: '', h: '', timestamp: ts };
 
     for (const f of (opt.options || [])) {

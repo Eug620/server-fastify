@@ -581,32 +581,25 @@ html.theme-transition *::after {
 }
 
 /* ==================== 时间字段 ==================== */
-.time-display:hover {
-    border-color: var(--accent) !important;
-    background: var(--input-focus-bg) !important;
+.time-input {
+    appearance: textfield;
+    -webkit-appearance: textfield;
+    -moz-appearance: textfield;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
 }
 
-.time-display:active {
-    transform: scale(0.98);
-}
-
-/* 隐藏 datetime-local 原生日历图标，防止焦点切换时宽度抖动 */
 .time-input::-webkit-calendar-picker-indicator {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    cursor: pointer;
+    opacity: 0.6;
+}
+
+.time-input::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
 }
 
 .time-input::-webkit-inner-spin-button,
 .time-input::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
-}
-
-.time-input {
-    appearance: textfield;
-    -webkit-appearance: textfield;
-    -moz-appearance: textfield;
 }
