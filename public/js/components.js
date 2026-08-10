@@ -106,15 +106,6 @@ export function createTimeField() {
     const wrap = createEl('div', 'form-field');
     wrap.style.marginBottom = '12px';
 
-    const label = createEl('label');
-    label.textContent = '时间';
-    label.style.display = 'block';
-    label.style.fontSize = '13px';
-    label.style.color = 'var(--input-label)';
-    label.style.marginBottom = '6px';
-    label.style.fontWeight = '500';
-    wrap.appendChild(label);
-
     const editor = createEl('div', 'time-editor');
     editor.style.cssText = 'position:relative;width:100%;min-height:44px;';
 
