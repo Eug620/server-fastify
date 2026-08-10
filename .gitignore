@@ -71,3 +71,7 @@ data/
 public/*
 !public/index.html
 !public/siam.svg
+!public/turntable-selection.mjs
+!public/app.css
+!public/themes/
+!public/js/

@@ -1,0 +1,66 @@
+/* ==================== 亮色主题 ==================== */
+html[data-theme="light"] {
+    /* 背景色 */
+    --bg-primary: #f5f7fa;           /* 主背景色 */
+    --bg-secondary: #ffffff;         /* 次级背景色（顶部栏） */
+    --bg-tertiary: #e8e8ed;          /* 三级背景色（标签页） */
+    /* 主题色 */
+    --accent: #4ECDC4;               /* 主题强调色 */
+    /* 文字颜色 */
+    --text-primary: #222;            /* 主文字颜色 */
+    --text-secondary: rgba(0, 0, 0, 0.6);  /* 次级文字颜色 */
+    --text-muted: #999;              /* 弱化文字颜色 */
+    /* 边框颜色 */
+    --border: #e0e0e0;               /* 边框色 */
+    --border-light: rgba(0, 0, 0, 0.08);  /* 浅边框色（列表项） */
+    --border-list: rgba(0, 0, 0, 0.1);    /* 列表边框色 */
+    /* 卡片颜色 */
+    --card-bg: rgba(255, 255, 255, 0.8);  /* 卡片背景色 */
+    /* 弹窗颜色 */
+    --modal-bg: #ffffff;                /* 弹窗背景色 */
+    --modal-text: #222;                 /* 弹窗主文字颜色 */
+    --modal-muted: rgba(0, 0, 0, 0.5);  /* 弹窗弱化文字颜色 */
+    --modal-border: rgba(0, 0, 0, 0.08); /* 弹窗边框颜色 */
+    /* 按钮颜色 */
+    --btn-cancel-bg: rgba(0, 0, 0, 0.05);  /* 取消按钮背景色 */
+    --btn-cancel-text: rgba(0, 0, 0, 0.6);  /* 取消按钮文字颜色 */
+    --btn-confirm-bg: var(--accent);      /* 确认按钮背景色 */
+    --btn-confirm-text: #fff;            /* 确认按钮文字颜色 */
+    --btn-danger: #e74c3c;               /* 危险操作颜色（删除） */
+    /* 阴影 */
+    --shadow-light: 0 2px 6px rgba(0, 0, 0, 0.08);   /* 轻阴影 */
+    --shadow-medium: 0 8px 20px rgba(0, 0, 0, 0.12);  /* 中阴影 */
+    /* 图片查看器 */
+    --viewer-bg: rgba(0, 0, 0, 0.85);  /* 图片查看器背景 */
+    --viewer-control-bg: rgba(0, 0, 0, 0.5);  /* 控件背景色 */
+    --viewer-control-hover: rgba(0, 0, 0, 0.6);  /* 控件悬停色 */
+    --viewer-zoom-text: rgba(255, 255, 255, 0.9);    /* 缩放提示文字色 */
+    /* 标签页悬停 */
+    --tab-hover-bg: #e0e0e0;          /* 标签页悬停背景 */
+    --tab-hover-text: #333;            /* 标签页悬停文字 */
+    /* 输入框 */
+    --input-border: rgba(0, 0, 0, 0.15);  /* 输入框边框色 */
+    --input-bg: #ffffff;                   /* 输入框背景色 */
+    --input-text: #333;                    /* 输入框文字颜色 */
+    --input-label: rgba(0, 0, 0, 0.5);     /* 输入框标签颜色 */
+    --input-focus-bg: #f0fffe;             /* 输入框聚焦背景色 */
+    /* Toast */
+    --toast-bg: rgba(0, 0, 0, 0.8);   /* Toast 背景色 */
+    --toast-text: #fff;                /* Toast 文字色 */
+    /* 上传按钮 */
+    --upload-border: rgba(0, 0, 0, 0.15);  /* 上传区域边框色 */
+    --upload-border-hover: var(--accent);     /* 上传区域悬停边框色 */
+    --upload-bg: rgba(0, 0, 0, 0.02);       /* 上传区域背景色 */
+    --upload-bg-hover: rgba(78, 205, 196, 0.08); /* 上传区域悬停背景色 */
+    --upload-text: rgba(0, 0, 0, 0.5);      /* 上传区域提示文字色 */
+    --upload-icon: rgba(0, 0, 0, 0.4);      /* 上传区域图标色 */
+    /* 主题切换按钮 */
+    --theme-toggle-bg: rgba(0, 0, 0, 0.05);   /* 切换按钮背景 */
+    --theme-toggle-hover: rgba(0, 0, 0, 0.1); /* 切换按钮悬停 */
+    --theme-toggle-icon: #4a5568;                /* 月亮图标颜色 */
+    /* 转盘Canvas配色（亮色模式） */
+    --turntable-btn-bg: #ffffff;
+    --turntable-btn-font: #4a5568;
+    --turntable-label-active: rgba(34, 34, 34, 1);
+    --turntable-label-inactive: rgba(34, 34, 34, 0.5);
+}
