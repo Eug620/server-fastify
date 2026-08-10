@@ -14,7 +14,8 @@
 | 跨域 | @fastify/cors |
 | 自动加载 | @fastify/autoload |
 | 日志 | Pino + pino-pretty |
-| 前端 | 原生 HTML/CSS/JavaScript（Canvas 绘制） |
+| 转盘组件 | turntable-selection |
+| 前端 | 原生 HTML/CSS/JavaScript（ES Modules 模块化） |
 | 构建 | tsc 编译 → dist/ |
 
 ## 项目结构
@@ -22,8 +23,23 @@
 ```
 server-fastify/
 ├── public/
-│   ├── index.html              # 前端单页应用（Canvas 转盘交互 + 深色主题）
-│   └── siam.svg                # 站点图标
+│   ├── index.html                  # 前端入口（HTML 结构 + 模块引入）
+│   ├── app.css                     # 基础样式（布局/组件/弹窗/时间字段）
+│   ├── siam.svg                    # 站点图标
+│   ├── turntable-selection.mjs     # 转盘组件（npm 包 dist 产物）
+│   ├── themes/
+│   │   ├── dark.css                # 暗色主题变量
+│   │   └── light.css               # 亮色主题变量
+│   └── js/
+│       ├── config.js               # 应用配置 + 记录类型定义
+│       ├── state.js                # 全局状态（数据/转盘实例/回调集合）
+│       ├── utils.js                # 工具函数（Toast/弹窗/格式化/DOM）
+│       ├── api.js                  # API 接口封装
+│       ├── turntable.js            # 转盘组件初始化 + 主题配色
+│       ├── theme.js                # 主题管理器（切换/持久化/转盘重建）
+│       ├── viewer.js               # 图片查看器（缩放/平移/双指手势）
+│       ├── components.js           # 可复用表单字段（时间/数值/图片）
+│       └── app.js                  # 应用主逻辑（加载/渲染/初始化）
 ├── src/
 │   ├── app.ts                  # 应用入口，配置 AutoLoad 自动加载 plugins 和 routes
 │   ├── config.ts               # 全局配置（端口/日志/CORS/bodyLimit 等）
@@ -190,103 +206,127 @@ interface ApiResponse<T> {
 }
 ```
 
-## 前端说明（public/index.html）
+## 前端说明
 
 ### 概述
 
-单页 Web 应用，采用 Canvas 转盘交互设计，**深色主题**。代码结构模块化，CSS 变量统一管理主题样式，AppConfig 集中管理配置项。
+单页 Web 应用，采用 `turntable-selection` 转盘组件，原生 ES Modules 模块化架构。支持**日间/夜间主题切换**，CSS 变量统一管理主题样式，配置与业务逻辑分离。
 
 ### 功能特性
 
-- **转盘交互**：Canvas 绘制扇形转盘，左右滑动切换记录类型（喂奶/喝水/大便/小便/睡觉）
-- **扇形间距**：等宽间距设计，从边缘到圆心间距保持一致
-- **中心按钮**：点击半圆按钮打开输入弹窗
-- **日期 Tab**：顶部切换不同日期查看记录
-- **统计卡片**：按类型显示当天记录次数
-- **数据管理**：查看、删除历史记录
+- **转盘交互**：基于 `turntable-selection` 组件，支持滑动切换 + 点击选中
+- **主题切换**：日间/夜间模式一键切换，偏好持久化存储，转盘 Canvas 颜色自动同步
+- **时间编辑**：记录时间支持 `MM-DD hh:mm:ss` 格式显示，点击可修改
+- **日期 Tab**：顶部切换不同日期查看记录，自动滚动定位
+- **统计卡片**：按类型显示当天记录次数，标题内合计 ml/h 数值
+- **数据管理**：查看、删除历史记录，删除后自动刷新
 - **图片上传**：自定义美化的上传区域，支持预览
 - **图片查看器**：支持缩放、拖拽、双指手势操作
-- **Toast 提示**：操作反馈统一提示
+- **Toast 提示**：操作反馈统一提示，文字颜色自适应主题
+
+### 架构设计
+
+前端代码按**依赖方向**分层组织，零循环依赖：
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                     app.js (主入口)                      │
+│                   编排初始化 + 事件绑定                    │
+└──────────┬──────────┬──────────┬──────────┬─────────────┘
+           │          │          │          │
+    ┌──────▼──┐  ┌────▼───┐  ┌──▼────┐  ┌──▼────────┐
+    │ viewer  │  │components│ │theme  │  │ turntable │
+    └──────┬──┘  └────┬───┘  └──┬────┘  └─────┬──────┘
+           │          │        │              │
+           └──────────┴────────┴──────────────┘
+                              │
+                     ┌────────▼────────┐
+                     │   state.js      │  状态/实例/回调
+                     └────────┬────────┘
+                     ┌────────▼────────┐
+                     │   utils.js      │  工具函数
+                     └────────┬────────┘
+                     ┌────────▼────────┐
+                     │   config.js     │  配置/类型
+                     └─────────────────┘
+                     ┌─────────────────┐
+                     │    api.js       │  API 封装
+                     └─────────────────┘
+```
+
+### 模块说明
+
+| 模块 | 职责 | 依赖 |
+|------|------|------|
+| `config.js` | AppConfig 配置 + options 记录类型定义 | 无 |
+| `state.js` | 全局状态、转盘实例引用、回调集合 | 无 |
+| `utils.js` | Toast/弹窗/时间格式化/DOM 创建 | 无 |
+| `api.js` | 通用请求封装 + API 接口集合 | 无 |
+| `turntable.js` | 转盘组件初始化、数据映射、主题配色读取 | config, state |
+| `theme.js` | 主题切换/持久化/转盘重建 | state, turntable, utils |
+| `viewer.js` | 图片查看器缩放/平移/双指手势 | state, utils, config |
+| `components.js` | 可复用表单字段（时间/数值/图片） | state, utils |
+| `app.js` | 主编排逻辑：数据加载、UI 渲染、初始化 | 全部模块 |
+
+### 主题系统
+
+采用双 CSS 文件 + `data-theme` 属性方案，支持日间/夜间模式：
+
+- **`themes/dark.css`**：默认暗色主题变量（无 `data-theme` 时生效）
+- **`themes/light.css`**：亮色主题变量（`data-theme="light"` 时生效）
+- **`app.css`**：布局/组件基础样式（引用 CSS 变量）
+- **切换逻辑**：`ThemeManager` 通过修改 `data-theme` 属性触发变量更新，转盘实例同步重建
+- **FOUC 预防**：`<head>` 内联脚本预先设置主题，避免样式加载闪烁
 
 ### 主题配置（CSS 变量）
 
-所有可配置样式通过 CSS 变量管理，定义在 `:root` 中：
+所有可配置样式通过 CSS 变量管理，分别定义在 `dark.css` 和 `light.css` 中：
 
 ```css
+/* dark.css — 默认暗色主题 */
 :root {
-  /* 背景色 */
-  --bg-primary: #272727;           /* 主背景色 */
-  --bg-secondary: #1e1e1e;         /* 次级背景色 */
-  --bg-tertiary: #2a2a2a;          /* 三级背景色 */
-  
-  /* 主题色 */
-  --accent: #4ECDC4;               /* 主题强调色 */
-  
-  /* 文字颜色 */
-  --text-primary: #fff;            /* 主文字颜色 */
-  --text-secondary: rgba(255, 255, 255, 0.5);
-  --text-muted: #888;
-  
-  /* 弹窗颜色 */
-  --modal-bg: #1e1e1e;
-  --modal-text: #fff;
-  --modal-muted: rgba(255, 255, 255, 0.5);
-  
-  /* 按钮颜色 */
-  --btn-cancel-bg: rgba(255, 255, 255, 0.1);
-  --btn-confirm-bg: var(--accent);
-  --btn-danger: #e74c3c;
-  
-  /* 输入框颜色 */
-  --input-border: rgba(255, 255, 255, 0.2);
-  --input-bg: rgba(255, 255, 255, 0.05);
-  --input-text: rgba(255, 255, 255, 0.9);
-  
-  /* 上传按钮 */
-  --upload-border: rgba(255, 255, 255, 0.2);
-  --upload-border-hover: var(--accent);
-  
-  /* 图片查看器 */
-  --viewer-bg: rgba(0, 0, 0, 0.9);
+  --bg-primary: #272727;
+  --bg-secondary: #1e1e1e;
+  --accent: #4ECDC4;
+  --text-primary: #fff;
+  /* ... 更多变量 */
+}
+
+/* light.css — 亮色主题（在暗色基础上覆盖） */
+html[data-theme="light"] {
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #fff;
+  --accent: #4ECDC4;
+  --text-primary: #333;
+  /* ... 覆盖变量 */
 }
 ```
 
 ### 应用配置（AppConfig）
 
-前端交互配置通过 `AppConfig` 对象集中管理：
+前端交互配置通过 `AppConfig` 对象集中管理，定义在 `js/config.js`：
 
 ```javascript
-const AppConfig = {
-    canvas: {
-        aspectRatio: 0.5,           // 画布高度/宽度比例
-        duration: 450,              // 动画时长（毫秒）
-        swipeThreshold: 30,         // 滑动判定阈值（像素）
-        tapThreshold: 15,           // 点击判定阈值（像素）
-        labelRadiusRatio: 0.62,     // 标签半径占比
-        labelFontRatio: 0.11,       // 标签字体大小占比
-        btnRadiusRatio: 0.48,       // 按钮半径占比
-        btnFontRatio: 0.6,          // 按钮字体大小占比
-        btnHitTolerance: 10,        // 按钮点击容差
-        innerRadiusRatio: 0.52,     // 圆心空白（内/外半径比）
-        sectorGap: 8,               // 扇形间距（像素）
-        colors: { ... },            // 绘制颜色配置
+export const AppConfig = {
+    turntable: {
+        duration: 450,
+        swipeThreshold: 30,
+        tapThreshold: 15,
+        aspectRatio: 0.5,
+        sectorGap: 8,
+        innerRadiusRatio: 0.52,
+        label: { radiusRatio: 0.62, fontSizeRatio: 0.11, /* ... */ },
+        button: { text: '+', radiusRatio: 0.48, /* ... */ },
     },
-    grid: {
-        columns: 4,                 // 网格列数
-        gap: 12,                    // 卡片间距
-    },
-    viewer: {
-        minScale: 0.5,              // 最小缩放比例
-        maxScale: 5,                // 最大缩放比例
-        scaleStep: 0.25,            // 缩放步长
-    },
+    grid: { columns: 4, gap: 12 },
+    viewer: { minScale: 0.5, maxScale: 5, scaleStep: 0.25 },
 };
 ```
 
 ### 记录类型配置（options）
 
 ```javascript
-const options = [
+export const options = [
     { type: 'wn', label: '喂奶', color: 'rgba(255,138,128,0.5)', options: [{ key: 'ml', label: 'ml' }] },
     { type: 'hs', label: '喝水', color: 'rgba(79,165,255,0.5)', options: [{ key: 'ml', label: 'ml' }] },
     { type: 'db', label: '大便', color: 'rgba(139,98,58,0.5)', options: [{ key: 'img', label: 'img' }] },
@@ -294,27 +334,6 @@ const options = [
     { type: 'sj', label: '睡觉', color: 'rgba(149,117,205,0.5)', options: [{ key: 'h', label: 'h' }] },
 ];
 ```
-
-### 前端代码模块
-
-| 模块 | 说明 |
-|------|------|
-| CSS 变量 | 全局主题配置，所有颜色/间距/阴影 |
-| AppConfig | Canvas/网格/查看器等交互配置 |
-| options | 记录类型数据配置 |
-| API | 后端接口封装（list/create/delete/upload） |
-| 常量 | HALF_PI、TAU 等数学常量 |
-| 状态管理 | 全局 state 对象，存储可变状态 |
-| 工具函数 | withShadow、drawArc、drawText、showToast 等 |
-| Canvas 绘制 | draw、drawSectors、drawSemicircleButton |
-| 动画 | easeOutCubic、animate、rotateTo |
-| 交互 | onPointerDown、onPointerUp、isInsideButton |
-| 日期 Tab | getAllDates、renderDateTabs |
-| 卡片列表 | getDateCounts、renderCards |
-| 数据列表弹窗 | getDataByType、openDataList |
-| 图片查看器 | openImgViewer、setViewerScale、applyViewerTransform |
-| 输入弹窗 | createNumberField、createImageField、openInputDialog、submitInput |
-| 初始化 | init、resize |
 
 ## 数据存储说明
 
