@@ -44,14 +44,14 @@ export function formatDate(ts) {
 }
 
 /**
- * 时间戳转时间字符串（HH:MM:SS格式）
+ * 时间戳转时间字符串（HH:MM格式）
  * @param {number} ts - 时间戳（毫秒）
- * @returns {string} 格式化后的时间，如 "14:30:05"
+ * @returns {string} 格式化后的时间，如 "14:30"
  */
 export function formatTime(ts) {
     const d = new Date(ts);
     const p = n => String(n).padStart(2, '0');
-    return `${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+    return `${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
 /**
