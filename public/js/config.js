@@ -38,6 +38,14 @@ export const AppConfig = {
                 offsetY: -6,
             },
         },
+        sectorStyle: {
+            shadow: {
+                color: 'rgba(0,0,0,0.3)',
+                blur: 8,
+                offsetX: 0,
+                offsetY: 2,
+            },
+        },
     },
     /** 卡片网格配置 */
     grid: {
@@ -57,9 +65,9 @@ export const AppConfig = {
  * @type {Array<{type: string, label: string, color: string, options: Array<{key: string, label: string}>}>}
  */
 export const options = [
-    { type: 'wn', label: '喂奶', color: 'rgba(255,138,128,0.5)', options: [{ key: 'ml', label: 'ml' }] },
-    { type: 'hs', label: '喝水', color: 'rgba(79,165,255,0.5)', options: [{ key: 'ml', label: 'ml' }] },
-    { type: 'db', label: '大便', color: 'rgba(139,98,58,0.5)', options: [{ key: 'img', label: 'img' }] },
-    { type: 'xb', label: '小便', color: 'rgba(255,206,86,0.5)', options: [{ key: 'img', label: 'img' }] },
-    { type: 'sj', label: '睡觉', color: 'rgba(149,117,205,0.5)', options: [{ key: 'h', label: 'h' }] },
+    { type: 'wn', label: '喂奶', color: 'rgba(255,138,128,0.8)', options: [{ key: 'ml', label: 'ml' }] },
+    { type: 'hs', label: '喝水', color: 'rgba(79,165,255,0.8)', options: [{ key: 'ml', label: 'ml' }] },
+    { type: 'db', label: '大便', color: 'rgba(139,98,58,0.8)', options: [{ key: 'img', label: 'img' }] },
+    { type: 'xb', label: '小便', color: 'rgba(255,206,86,0.8)', options: [{ key: 'img', label: 'img' }] },
+    { type: 'sj', label: '睡觉', color: 'rgba(149,117,205,0.8)', options: [{ key: 'h', label: 'h' }] },
 ];

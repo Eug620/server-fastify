@@ -23,10 +23,11 @@ export function createTurntableItems() {
 /**
  * 从 CSS 变量读取主题相关的配置值
  * @description 读取当前主题下的转盘配色变量，使 Canvas 绘制能响应主题切换
- * @returns {Object} 包含按钮、标签等配色配置的对象
+ * @returns {Object} 包含按钮、标签、扇区样式等配色配置的对象
  */
 export function getThemeTurntableConfig() {
     const style = getComputedStyle(document.documentElement);
+    const baseSectorStyle = AppConfig.turntable.sectorStyle;
     return {
         button: {
             ...AppConfig.turntable.button,
@@ -38,6 +39,14 @@ export function getThemeTurntableConfig() {
             ...AppConfig.turntable.label,
             activeColor: style.getPropertyValue('--turntable-label-active').trim() || AppConfig.turntable.label.activeColor,
             inactiveColor: style.getPropertyValue('--turntable-label-inactive').trim() || AppConfig.turntable.label.inactiveColor,
+        },
+        sectorStyle: {
+            shadow: {
+                color: style.getPropertyValue('--turntable-sector-shadow').trim() || baseSectorStyle?.shadow?.color,
+                blur: parseInt(style.getPropertyValue('--turntable-sector-shadow-blur').trim()) || baseSectorStyle?.shadow?.blur,
+                offsetX: parseInt(style.getPropertyValue('--turntable-sector-shadow-offset-x').trim()) || baseSectorStyle?.shadow?.offsetX,
+                offsetY: parseInt(style.getPropertyValue('--turntable-sector-shadow-offset-y').trim()) || baseSectorStyle?.shadow?.offsetY,
+            },
         },
     };
 }
@@ -67,6 +76,7 @@ export function initTurntable() {
         innerRadiusRatio: cfg.innerRadiusRatio,
         label: themeCfg.label,
         button: themeCfg.button,
+        sectorStyle: themeCfg.sectorStyle,
         onRotate: (data) => {
             console.debug('转盘旋转:', data.direction, '当前:', data.currentItem?.label);
         },

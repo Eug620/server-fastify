@@ -63,4 +63,8 @@
     --turntable-btn-font: #7d7d7f;
     --turntable-label-active: rgba(255, 255, 255, 1);
     --turntable-label-inactive: rgba(255, 255, 255, 0.5);
+    --turntable-sector-shadow: rgba(0, 0, 0, 0.3);
+    --turntable-sector-shadow-blur: 8;
+    --turntable-sector-shadow-offset-x: 0;
+    --turntable-sector-shadow-offset-y: 2;
 }
